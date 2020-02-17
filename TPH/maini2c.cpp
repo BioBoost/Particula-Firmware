@@ -3,7 +3,9 @@
 //#include "i2cTPH.h"
 
 //For IC2 intilization
-BME280 TphIc2 = BME280(D14, D15, DEFAULT_SLAVE_ADDRESS);
+BME280 TphIc2 = BME280(D1, D0, DEFAULT_SLAVE_ADDRESS); 
+//DO en D1 voor NUCLEO_L432KC
+//D14 en D15 voor NUCLEO_F042K6
 
 //PC serial initilization
 Serial pc(USBTX, USBRX); //tx, rx
