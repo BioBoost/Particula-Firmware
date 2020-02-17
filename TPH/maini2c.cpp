@@ -1,6 +1,7 @@
 #include "mbed.h"
 #include "BME280.h"
-//#include "i2cTPH.h"
+
+// in dit proof of concept gebruiken we I2C
 
 //For IC2 intilization
 
