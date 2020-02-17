@@ -5,7 +5,7 @@
 //For IC2 intilization
 
 char addr = 0x76 << 1; //OPGEPAST Mbed gebruikt 8 bit I2C addressen
-BME280 TphIc2 = BME280(D1, D0, addr); 
+BME280 TphIc2 = BME280(D0, D1, addr); 
 //DO en D1 voor NUCLEO_L432KC
 //D14 en D15 voor NUCLEO_F042K6
 
@@ -14,8 +14,10 @@ Serial pc(USBTX, USBRX); //tx, rx
 
 
 int main(){
-    pc.printf("\n IC2");
-    pc.printf("\n Humidity = %lf", TphIc2.getHumidity());
-    pc.printf("\n Temperature = %lf", TphIc2.getTemperature());
-    pc.printf("\n Presure = %lf", TphIc2.getPressure());
+    while(1){
+        pc.printf("\n IC2");
+        pc.printf("\n Humidity = %lf", TphIc2.getHumidity());
+        pc.printf("\n Temperature = %lf", TphIc2.getTemperature());
+        pc.printf("\n Presure = %lf", TphIc2.getPressure());
+    }
 }
