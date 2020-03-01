@@ -132,6 +132,10 @@ public:
 
     double humidity(void);
 
+    int sleep();
+
+    int awake();
+
 private:
 
     I2C         *i2c_p;
