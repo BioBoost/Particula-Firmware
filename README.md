@@ -13,3 +13,9 @@ This device is used over SPI
 
 ## Particel sensor
 This device is used over UART
+
+## Related repos
+### TPH: "https://github.com/vives-projectwerk-2-2020/ParticulaTPH"
+### EEPROM: "PlaceHolder"
+### LoraWAN: "https://github.com/vives-projectwerk-2-2020/LoRaWAN-example"
+### Particel: "https://github.com/vives-projectwerk-2-2020/SDS011_Library" 
