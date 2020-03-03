@@ -1,3 +1,4 @@
-./AmbiantSensorMessage/
-./mbed-os/
+AmbiantSensorMessage/
+mbed-os/
 ./.mbed
+./mbed_settings.py
