@@ -1,18 +1,14 @@
-// #pragma once
-
 #include "mbed.h"
 #include "AmbiantSensorMessage.h"
 #include "Simple-LoRaWAN.h"
 #include "settings.h"
 #include "BME280.h"
-#include <I2C.h>
-
-SimpleLoRaWAN::Node node(keys, pins);
-
-char addr = 0x76 << 1;
-BME280 tph_sensor = BME280(D14, D15, addr);
 
 int main(void) {
+    SimpleLoRaWAN::Node node(keys, pins);
+
+    char addr = 0x76 << 1;  // I2C address of TPH sensor
+    BME280 tph_sensor = BME280(D14, D15, addr);
 
     while (true) {
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
