@@ -4,3 +4,4 @@ mbed-Simple-LoRaWAN/
 ./.mbed
 ./mbed_settings.py
 src/settings.h
+BUILD
