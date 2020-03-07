@@ -3,4 +3,4 @@ mbed-os/
 mbed-Simple-LoRaWAN/
 ./.mbed
 ./mbed_settings.py
-settings.h
+src/settings.h

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "mbed.h"
 #include "AmbiantSensorMessage.h"
 #include "Simple-LoRaWAN.h"
