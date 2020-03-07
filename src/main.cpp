@@ -4,6 +4,7 @@
 #include "AmbiantSensorMessage.h"
 #include "Simple-LoRaWAN.h"
 #include "settings.h"
+#include "BME280.h"
 
 SimpleLoRaWAN::Node node(keys, pins);
 
