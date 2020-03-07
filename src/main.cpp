@@ -1,31 +1,40 @@
-#pragma once
+// #pragma once
 
 #include "mbed.h"
 #include "AmbiantSensorMessage.h"
 #include "Simple-LoRaWAN.h"
 #include "settings.h"
 #include "BME280.h"
+#include <I2C.h>
 
 SimpleLoRaWAN::Node node(keys, pins);
 
+char addr = 0x76 << 1;
+BME280 tph_sensor = BME280(D14, D15, addr);
+
 int main(void) {
 
-    double temperature = 22.65;  // value in °C
-    double humidity = 9.55;      // value in %
-    double pressure = 1013.5;    // value in hPa
-    double pm25 = 12.3;          // value in µg/m³
-    double pm10 = 23.4;          // value in µg/m³
+    while (true) {
+        double temperature = (double) tph_sensor.getTemperature();  // value in °C
+        double humidity = (double) tph_sensor.getHumidity();        // value in %
+        double pressure = (double) tph_sensor.getPressure();        // value in hPa
+        double pm25 = 12.3;          // value in µg/m³
+        double pm10 = 23.4;          // value in µg/m³
 
-    ParticulaLora::AmbiantSensorMessage message;
+        ParticulaLora::AmbiantSensorMessage message;
 
-    message.addTemperature(temperature);
-    message.addHumidity(humidity);
-    message.addPressure(pressure);
-    message.addPM(pm25);
-    message.addPM(pm10);
+        temperature = (double) tph_sensor.getTemperature();
+        humidity = (double) tph_sensor.getHumidity();
+        pressure = (double) tph_sensor.getPressure();
 
-    node.send(message.getMessage(), message.getLength());
-    wait(30.0);
+        message.addTemperature(temperature);
+        message.addHumidity(humidity);
+        message.addPressure(pressure);
+        message.addPM(pm25);
+        message.addPM(pm10);
 
+        node.send(message.getMessage(), message.getLength());
+        wait(30.0);
+    }
     return 0;
 }
