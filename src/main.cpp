@@ -8,7 +8,7 @@ int main(void) {
     SimpleLoRaWAN::Node node(keys, pins);
 
     char addr = 0x76 << 1;  // I2C address of TPH sensor
-    BME280 tph_sensor = BME280(D14, D15, addr);
+    BME280 tph_sensor = BME280(D14, D15, addr); // D4 en D5 voor kleine nucleo
 
     while (true) {
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
