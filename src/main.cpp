@@ -4,8 +4,9 @@
 #include "settings.h"
 #include "BME280.h"
 
+SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small
+
 int main(void) {
-    SimpleLoRaWAN::Node node(keys, pins);
 
     char addr = 0x76 << 1;  // I2C address of TPH sensor
     BME280 tph_sensor = BME280(D14, D15, addr); // D4 en D5 voor kleine nucleo
