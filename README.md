@@ -1,4 +1,23 @@
 # Particula-Firmware
+
+
+## Getting started
+Clone the project and get the dependencies installed:
+
+```
+git clone git@github.com:vives-projectwerk-2-2020/Particula-Firmware.git
+cd Particula-Firmware
+
+// If your project is not an mbed project yet
+// mbed new .
+
+mbed deploy
+```
+
+Setup an TTN application:
+
+
+
 The conglomeration of all the firmeware from the Particula Project
  
 ## Temperature Presure Humidity sensor

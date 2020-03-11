@@ -2,6 +2,7 @@ AmbiantSensorMessage/
 mbed-os/
 mbed-Simple-LoRaWAN/
 ParticulaTPH/
+SDS011_Library
 ./.mbed
 ./mbed_settings.py
 src/settings.h
