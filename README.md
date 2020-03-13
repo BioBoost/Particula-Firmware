@@ -60,6 +60,6 @@ int main(void) {
 - [ParticulaTPH](https://github.com/vives-projectwerk-2-2020/ParticulaTPH)
 
 ### SDS011 Particel sensor (over UART)
-- [SDS011_Librart](https://github.com/vives-projectwerk-2-2020/SDS011_Library)
+- [SDS011_Library](https://github.com/vives-projectwerk-2-2020/SDS011_Library)
  
 ### EEPROM (over I2C)
