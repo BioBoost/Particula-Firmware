@@ -4,15 +4,17 @@
 ## Getting started
 Clone the project and get the dependencies installed:
 
-```
+```shell
 git clone git@github.com:vives-projectwerk-2-2020/Particula-Firmware.git
 cd Particula-Firmware
 
-// If your project is not an mbed project yet
-// mbed new .
-
-mbed deploy
+mbed new .              // Create new mbed project and download mbed-os library
+mbed deploy             // Install dependencies
+mbed toolchain GCC_ARM  // Setting default toolchain (ARM, ARMC5, ARMC6, IAR, GCC_ARM)
+mbed target detect      // Setting target to automatically detect connected device
+mbed compile -f         // When  device is connected, compile  firmware and flash device
 ```
+
 
 Setup an TTN application:
 
