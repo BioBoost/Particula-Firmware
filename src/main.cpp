@@ -3,27 +3,33 @@
 #include "Simple-LoRaWAN.h"
 #include "settings.h"
 #include "BME280.h"
-#include <stdio.h>
 
 SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
 BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
 
+Serial pc(USBTX, USBRX);
+
 int main(void) {
+    pc.printf("\r\n \r\n");  // Prevent overlap with previous serial communication
+    pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
 
     while (true) {
         ParticulaLora::AmbiantSensorMessage message;    // Has to be placed here because otherwise the new values will be added to the same message
 
-        double temperature = (double) tph_sensor.getTemperature();  // value in °C
-        // pc.printf("\n[Particula] Measered temperature: %d", temperature);
+        pc.printf("\r\n[Particula] Taking measurements ...\r\n");
 
+        double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
         double pm25 = 12.3;          // value in µg/m³
         double pm10 = 23.4;          // value in µg/m³
 
-        // temperature = (double) tph_sensor.getTemperature();
-        // humidity = (double) tph_sensor.getHumidity();
-        // pressure = (double) tph_sensor.getPressure();
+        pc.printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
+        pc.printf("[Particula] Measered humidity:     %4.2f \%\r\n", humidity);
+        pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
+        pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
+        pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
+
 
         message.addTemperature(temperature);
         message.addHumidity(humidity);
