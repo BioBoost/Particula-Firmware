@@ -4,13 +4,13 @@
 #include "settings.h"
 #include "BME280.h"
 
+Serial pc(USBTX, USBRX);
+
 SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
 BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
 
-Serial pc(USBTX, USBRX);
 
 int main(void) {
-    pc.printf("\r\n \r\n");  // Prevent overlap with previous serial communication
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
 
     while (true) {
@@ -25,7 +25,7 @@ int main(void) {
         double pm10 = 23.4;          // value in µg/m³
 
         pc.printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
-        pc.printf("[Particula] Measered humidity:     %4.2f \%\r\n", humidity);
+        pc.printf("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
         pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
         pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
         pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
