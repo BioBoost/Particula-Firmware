@@ -4,7 +4,7 @@
 ## Getting started
 Clone the project, install the dependencies and setup your mbed development environment to compile the firmware and flash it.
 
-```shell
+```PowerShell
 git clone git@github.com:vives-projectwerk-2-2020/Particula-Firmware.git
 cd Particula-Firmware
 
@@ -12,6 +12,13 @@ mbed new .              // Create new mbed project and download mbed-os library
 mbed deploy             // Install dependencies
 mbed toolchain GCC_ARM  // Setting default toolchain (ARM, ARMC5, ARMC6, IAR, GCC_ARM)
 mbed target detect      // Setting target to automatically detect connected device
+```
+
+Now have a look at the project and use the `settings.example.h` in the `src/` directory as a template for your `settings.h` file. You should add the following keys: `devEui`, `appEui`, `appKey`. All of these can be retrieved from a TTN application.
+
+When this file is set up, run the following command:
+
+```PowerShell
 mbed compile -f         // When  device is connected, compile firmware and flash device
 ```
 
