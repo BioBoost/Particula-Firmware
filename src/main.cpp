@@ -4,12 +4,14 @@
 #include "settings.h"
 #include "BME280.h"
 
-SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small
+SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
 BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
-ParticulaLora::AmbiantSensorMessage message;
 
 int main(void) {
+
     while (true) {
+        ParticulaLora::AmbiantSensorMessage message;    // Has to be placed here because otherwise the new values will be added to the same message
+
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
