@@ -5,19 +5,14 @@
 #include "BME280.h"
 #include <stdio.h>
 
-SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small
+SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
 BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
 
-// Serial pc(USBTX, USBRX);
-
 int main(void) {
-    // pc.baud(115200);
-    // pc.printf("\n[Particula] Loading Firmware ...\n");
 
     while (true) {
-        ParticulaLora::AmbiantSensorMessage message;
+        ParticulaLora::AmbiantSensorMessage message;    // Has to be placed here because otherwise the new values will be added to the same message
 
-        // pc.printf("\n[Particula] Reading temperature: ...");
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         // pc.printf("\n[Particula] Measered temperature: %d", temperature);
 
