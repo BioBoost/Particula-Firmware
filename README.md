@@ -33,16 +33,17 @@ mbed compile -f         // When  device is connected, compile firmware and flash
 
 SimpleLoRaWAN::Node node(keys, pins);
 BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // Use pin-names and I2C address of your device(s)
-
+SDS011 part_sensor(D1,D0);
 int main(void) {
     while (true) {
         ParticulaLora::AmbiantSensorMessage message;
-
+        part_sensor.wakeUp();
+        while(!part_sensor.read());     // makes sure it has read a correct value
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
-        double pm25 = 12.3;          // value in µg/m³
-        double pm10 = 23.4;          // value in µg/m³
+        double pm25 = part_sensor.getPM25Value();   // value in µg/m³
+        double pm10 = part_sensor.getPM10Value();   // value in µg/m³
 
         message.addTemperature(temperature);
         message.addHumidity(humidity);
@@ -51,6 +52,7 @@ int main(void) {
         message.addPM(pm10);
 
         node.send(message.getMessage(), message.getLength());
+        part_sensor.sleep();
         ThisThread::sleep_for(30000);
     }
     return 0;
