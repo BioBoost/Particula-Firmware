@@ -22,6 +22,46 @@ When this file is set up, run the following command:
 mbed compile -f         // When  device is connected, compile firmware and flash device
 ```
 
+## Pinout
+### LoRaWAN + EEPROM Arduino compatible shield
+We use the default pinmap of the shield, make sure the dip switches on the back of the shield are configured correctly.
+
+| Signal 	| Default pin
+|--|--|
+| MOSI 	| D11
+| MISO 	| D12
+| CLK 	| D13
+| NSS 	| A0
+| RESET 	| A1
+| DIO 0 	| D2
+| DIO 1 	| D3
+
+### BME280 (TPH) sensor
+| From    | To       | Description         |
+|------------|------------|---------------------|
+| VDD        | 3V3        | power supply        |
+| GND        | GND        | common ground       |
+| SDO        | GND        | Selects 0X76 as the address on the I2C buss    |
+| CSB        | VDD        | Selects I2C for communication
+| SCK        | SCL        | I2C bus clock
+| SDI        | SDA        | I2C data bus
+
+SDA and SCK lines for the different development boards:
+| Board     | SDA       | SCK       |
+|-----------|-----------|-----------|
+| Nucleo_F303K8 | D4 | D5 |
+| Nucleo_L476RG | D14 | D15 |
+
+
+
+
+### SDS011 (Particle) sensor:
+(SDA and SCK) lines for the different development boards:
+| Board     | SDA  ??     | SCK ??      |
+|-----------|-----------|-----------|
+| Nucleo_F303K8 | D1 | D0 |
+| Nucleo_L476RG | D | D |
+
 ## Code example
 
 ```cpp
