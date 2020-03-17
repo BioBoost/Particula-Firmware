@@ -56,11 +56,11 @@ SDA and SCK lines for the different development boards:
 
 
 ### SDS011 (Particle) sensor:
-(SDA and SCK) lines for the different development boards:
-| Board     | SDA  ??     | SCK ??      |
+TX and RX lines for the different development boards:
+| Board     | TX     | RX      |
 |-----------|-----------|-----------|
 | Nucleo_F303K8 | D1 | D0 |
-| Nucleo_L476RG | D | D |
+| Nucleo_L476RG | D? | D? |
 
 ## Code example
 
