@@ -60,7 +60,9 @@ TX and RX lines for the different development boards:
 | Board     | TX     | RX      |
 |-----------|-----------|-----------|
 | Nucleo_F303K8 | D1 | D0 |
-| Nucleo_L476RG | D? | D? |
+| Nucleo_L476RG | A4 | A5 |
+
+(remember to connect sensor-RX to nucleo-TX and vice versa)
 
 ## Code example
 
