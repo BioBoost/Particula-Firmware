@@ -9,7 +9,7 @@ Serial pc(USBTX, USBRX);
 
 SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
 BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
-SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
+SDS011_Particle::SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
 
 int main(void) {
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
