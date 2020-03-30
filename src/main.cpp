@@ -40,7 +40,7 @@ int main(void) {
 
         node.send(message.getMessage(), message.getLength());
         part_sensor.sleep();
-        pc.printf("[Particula] Going to sleep, deep sleep possible: %i\r\n", sleep_manager_can_deep_sleep());
+        pc.printf("[Particula] Going to sleep, deep sleep possible (1: yes, 0: no): %i\r\n", sleep_manager_can_deep_sleep());
         ThisThread::sleep_for(30000);
     }
     return 0;
