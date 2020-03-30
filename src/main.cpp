@@ -11,12 +11,12 @@ SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probabl
 BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
 SDS011_Particle::SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
 
-Timeout timeout;
-bool check = false;
-void stop_loop() {
-    check = true;
-    // pc.printf("\r\n[Particula] stop_loop function is called ...\r\n");
-}
+// Timeout timeout;
+// bool check = false;
+// void stop_loop() {
+//     check = true;
+//     // pc.printf("\r\n[Particula] stop_loop function is called ...\r\n");
+// }
 
 // Implement a watchdog timer
 
@@ -33,18 +33,25 @@ int main(void) {
         double pm25 = 0.0;
         double pm10 = 0.0;
 
-        timeout.attach(&stop_loop, 5.0);
-
-        while(!check) {
+        // timeout.attach(&stop_loop, 5.0);
+        try
+        {
+            pc.printf("\r\n[Particula] Try to wake up Particle Sensor ...\r\n");
             part_sensor.wakeUp();
             pc.printf("[Particula] Particle Sensor Woke Up\r\n");
+        }
+        catch(const std::exception& e)
+        {
+            // std::cerr << e.what() << '\n';
+            pc.printf("\r\n[Particula] Could not wake up Particle Sensor.\r\n");
+        }
+        
 
             while(!part_sensor.read());   // makes sure it has read a correct value
             pc.printf("[Particula] Particle Sensor Values Are Being Read\r\n");
 
             pm25 = part_sensor.getPM25Value();          // value in µg/m³
             pm10 = part_sensor.getPM10Value();          // value in µg/m³
-        }
 
 
         
