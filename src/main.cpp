@@ -11,27 +11,32 @@ SDS011_Particle::SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
 
 int main(void) {
     while (true) {
+        double percentage = readBattery();
 
-        /* read battery voltage */
-        /* all values are to be determined after closer evaluation */
-        if(percentage >= 40.0){   
-            // depending of current percentage, determine sleeping time to come
-        } else if(percentage >= 20.0){
-            // disable part sensor, read only tph, send with lorawan
-        } else if(percentage >= 10.0){
-            // disable lorawan, write all data to eeprom
-        } else {
-            // read nothing, send low battery code vb (0 0 0 0 0)
+        if(percentage >= 20.0){   
+            part_sensor.wakeUp();
+            ThisThread::sleep_for(30000);
+            
+            tph_sensor.awake();
+            while(!part_sensor.read());
             ParticulaLora::AmbiantSensorMessage message;
-            message.addTemperature(0.0);
-            message.addHumidity(0.0);
-            message.addPressure(0.0);
-            message.addPM(0.0);
-            message.addPM(0.0);
-            node.send(message.getMessage(), message.getLength());
-            /* put particula to deep sleep */
-            ThisThread::sleep_for(43200000);       //12h = 12 * 60 * 60 *1000 = 43200 000
+            message.addTemperature((double) tph_sensor.getTemperature());
+            message.addHumidity((double) tph_sensor.getHumidity());
+            message.addPressure((double) tph_sensor.getPressure());
+            message.addPM(part_sensor.getPM25Value());
+            message.addPM(part_sensor.getPM10Value());
+            part_sensor.sleep();
+            tph_sensor.sleep();
+            node.send(message.getMessage(), message.getLength());           
+                  
+        } else if(percentage <= 20.0){
+            ThisThread::sleep_for(30000);
         }
+        ThisThread::sleep_for(270000); 
     }
     return 0;
+}
+
+double readBattery(){
+    return 80.0;
 }
