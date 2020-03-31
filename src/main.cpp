@@ -14,18 +14,33 @@ int main(void) {
         double percentage = readBattery();
 
         if(percentage >= 20.0){   
-            part_sensor.wakeUp();
-            ThisThread::sleep_for(30000);
-            
+            try{
+                part_sensor.wakeUp();
+            } catch(exception e){
+                // add error to lora message
+            }
+
+            ThisThread::sleep_for(30000);     
             tph_sensor.awake();
-            while(!part_sensor.read());
             ParticulaLora::AmbiantSensorMessage message;
+            
+            try {
+                while(!part_sensor.read());
+                message.addPM(part_sensor.getPM25Value());
+                message.addPM(part_sensor.getPM10Value());
+            } catch(Exception e){
+                // add error to Lora message 
+            }
+
             message.addTemperature((double) tph_sensor.getTemperature());
             message.addHumidity((double) tph_sensor.getHumidity());
             message.addPressure((double) tph_sensor.getPressure());
-            message.addPM(part_sensor.getPM25Value());
-            message.addPM(part_sensor.getPM10Value());
-            part_sensor.sleep();
+
+            try {
+                part_sensor.sleep();
+            } catch(Exception e){
+                // add error to Lora message
+            }
             tph_sensor.sleep();
             node.send(message.getMessage(), message.getLength());           
                   
