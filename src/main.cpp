@@ -7,7 +7,6 @@
 
 Serial pc(USBTX, USBRX);
 
-
 int main(void) {
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
@@ -22,8 +21,9 @@ int main(void) {
         part_sensor.wakeUp();
 
         pc.printf("\r\nWaiting for response from particle sensor\r\n");
-        while(!part_sensor.read());   // makes sure it has read a correct value
-
+        // while(!part_sensor.read());   // makes sure it has read a correct value
+        pc.printf("\r\nParticle Sensor read result: %03X\r\n", part_sensor.read());
+        part_sensor.read();
 
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
