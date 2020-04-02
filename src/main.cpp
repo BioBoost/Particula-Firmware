@@ -17,9 +17,15 @@ int main(void) {
 
     while (true) {
         ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
-        pc.printf("\r\n[Particula] Taking measurements ...\r\n");
+
+        pc.printf("\r\nWaking up particle sensor\r\n");
         part_sensor.wakeUp();
+
+        pc.printf("\r\nWaiting for response from particle sensor\r\n");
         while(!part_sensor.read());   // makes sure it has read a correct value
+
+
+        pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
