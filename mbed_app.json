@@ -1,10 +1,38 @@
 {
     "name": "Particula Firmware",
     "config": {
+        "i2c_sda": {
+            "value": "D14",
+            "macro_name": "I2C_SDA_PIN"
+        },
+        "i2c_sck": {
+            "value": "D15",
+            "macro_name": "I2C_SCK_PIN"
+        },
+        "uart_tx": {
+            "value": "A4",
+            "macro_name": "UART_TX_PIN"
+        },
+        "uart_rx": {
+            "value": "A5",
+            "macro_name": "UART_RX_PIN"
+        }
     },
     "target_overrides": {
         "*": {
             "rtos.main-thread-stack-size" : 8192
+        },
+        "NUCLEO_L476RG": {
+            "i2c_sda": "D14",
+            "i2c_sck": "D15",
+            "uart_tx": "A4",
+            "uart_rx": "A5"
+        },
+        "NUCLEO_F303K8": {
+            "i2c_sda": "D4",
+            "i2c_sck": "D5",
+            "uart_tx": "D1",
+            "uart_rx": "D0"
         }
     }
 }
