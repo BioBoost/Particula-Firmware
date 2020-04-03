@@ -10,7 +10,7 @@ Serial pc(USBTX, USBRX);
 int main(void) {
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
-    SDS011_Particle::SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
+    SDS011_Particle::SDS011 part_sensor(A4, A5);  // D1 en D0 voor kleine nucleo
     
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
 
@@ -19,10 +19,12 @@ int main(void) {
 
         pc.printf("\r\nWaking up particle sensor\r\n");
         part_sensor.wakeUp();
+        
+        pc.printf("\r\nGoing to sleep for 10 sec.\r\n");
+        ThisThread::sleep_for(10000);
 
-        pc.printf("\r\nWaiting for response from particle sensor\r\n");
-        // while(!part_sensor.read());   // makes sure it has read a correct value
         pc.printf("\r\nParticle Sensor read result: %03X\r\n", part_sensor.read());
+        // while(!part_sensor.read());   // makes sure it has read a correct value
         part_sensor.read();
 
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
@@ -37,7 +39,6 @@ int main(void) {
         pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
         pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
         pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
-
 
         message.addTemperature(temperature);
         message.addHumidity(humidity);
