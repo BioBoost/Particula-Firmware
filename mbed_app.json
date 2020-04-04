@@ -28,7 +28,7 @@
             "uart_tx": "A4",
             "uart_rx": "A5"
         },
-        "NUCLEO_F303K8": {
+        "NUCLEO_L432KC": {
             "i2c_sda": "D4",
             "i2c_sck": "D5",
             "uart_tx": "D1",

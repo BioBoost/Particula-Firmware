@@ -49,7 +49,7 @@ We use the default pinmap of the shield, make sure the dip switches on the back 
 SDA and SCK lines for the different development boards:
 | Board     | SDA       | SCK       |
 |-----------|-----------|-----------|
-| Nucleo_F303K8 | D4 | D5 |
+| Nucleo_L432KC | D4 | D5 |
 | Nucleo_L476RG | D14 | D15 |
 
 
@@ -59,7 +59,7 @@ SDA and SCK lines for the different development boards:
 TX and RX lines for the different development boards:
 | Board     | TX     | RX      |
 |-----------|-----------|-----------|
-| Nucleo_F303K8 | D1 | D0 |
+| Nucleo_L432KC | D1 | D0 |
 | Nucleo_L476RG | A4 | A5 |
 
 (remember to connect sensor-RX to nucleo-TX and vice versa)
@@ -72,20 +72,41 @@ TX and RX lines for the different development boards:
 #include "Simple-LoRaWAN.h"
 #include "settings.h"
 #include "BME280.h"
+#include "SDS011.h"
 
-SimpleLoRaWAN::Node node(keys, pins);
-BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // Use pin-names and I2C address of your device(s)
-SDS011 part_sensor(D1,D0);
+Serial pc(USBTX, USBRX);
+
+
 int main(void) {
+    SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
+    
+    BME280 tph_sensor = BME280(
+        I2C_SDA_PIN,
+        I2C_SCK_PIN,
+        0x76 << 1
+    );
+
+    SDS011_Particle::SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);
+    
+    pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
+
     while (true) {
-        ParticulaLora::AmbiantSensorMessage message;
+        ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
+        pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         part_sensor.wakeUp();
-        while(!part_sensor.read());     // makes sure it has read a correct value
+        while(!part_sensor.read());   // makes sure it has read a correct value
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
-        double pm25 = part_sensor.getPM25Value();   // value in µg/m³
-        double pm10 = part_sensor.getPM10Value();   // value in µg/m³
+        double pm25 = part_sensor.getPM25Value();          // value in µg/m³
+        double pm10 = part_sensor.getPM10Value();          // value in µg/m³
+
+        pc.printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
+        pc.printf("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
+        pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
+        pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
+        pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
+
 
         message.addTemperature(temperature);
         message.addHumidity(humidity);
@@ -95,6 +116,7 @@ int main(void) {
 
         node.send(message.getMessage(), message.getLength());
         part_sensor.sleep();
+        pc.printf("[Particula] Going to sleep, deep sleep possible (1: yes, 0: no): %i\r\n", sleep_manager_can_deep_sleep());
         ThisThread::sleep_for(30000);
     }
     return 0;
