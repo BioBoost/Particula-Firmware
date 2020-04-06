@@ -123,6 +123,26 @@ int main(void) {
 }
 ```
 
+## TTN Payload Decoder Output Example
+
+```javascript
+{
+  "errors": {
+    "0": 85,
+    "1": 68,
+    "2": 51,
+    "3": 34,
+    "4": 17,
+    "5": 0
+  },
+  "humidity": 53.97,
+  "pm10": 462.6,
+  "pm25": 488.3,
+  "pressure": 514,
+  "temperature": 56.54
+}
+```
+
 ## Used modules and libraries
 
 ### LoRaWAN RFM95W Transceiver (over ISP)
