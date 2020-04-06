@@ -24,8 +24,10 @@ int main(void) {
     while (true) {
         ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
-        part_sensor.wakeUp();
-        while(!part_sensor.read());   // makes sure it has read a correct value
+
+        int sds011WakeUpStatus = part_sensor.wakeUp();
+        int sds011ReadStatus = part_sensor.read();
+
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
@@ -38,14 +40,15 @@ int main(void) {
         pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
         pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
-        int testError = 0xAA;
-
         message.addTemperature(temperature);
         message.addHumidity(humidity);
         message.addPressure(pressure);
         message.addPM(pm25);
         message.addPM(pm10);
-        message.addError(testError);
+
+        // Add status (error) codes
+        message.addError(sds011WakeUpStatus);
+        message.addError(sds011ReadStatus);
 
         node.send(message.getMessage(), message.getLength());
         part_sensor.sleep();
