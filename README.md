@@ -78,7 +78,7 @@ Serial pc(USBTX, USBRX);
 
 
 int main(void) {
-    SimpleLoRaWAN::Node node(keys, pins);
+    SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     
     BME280 tph_sensor = BME280(
         I2C_SDA_PIN,
@@ -91,7 +91,7 @@ int main(void) {
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
 
     while (true) {
-        ParticulaLora::AmbiantSensorMessage message;
+        ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         part_sensor.wakeUp();
         while(!part_sensor.read());   // makes sure it has read a correct value
@@ -107,12 +107,14 @@ int main(void) {
         pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
         pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
+        int testError = 0xAA;
 
         message.addTemperature(temperature);
         message.addHumidity(humidity);
         message.addPressure(pressure);
         message.addPM(pm25);
         message.addPM(pm10);
+        message.addError(testError);
 
         node.send(message.getMessage(), message.getLength());
         part_sensor.sleep();
