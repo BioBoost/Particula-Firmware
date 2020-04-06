@@ -118,7 +118,7 @@ SDA and SCK lines for the different development boards:
 | Nucleo_L432KC | D4 | D5 |
 | Nucleo_L476RG | D14 | D15 |
 
-### SDS011 (Particle) sensor:
+### SDS011 (Particle) sensor
 
 TX and RX lines for the different development boards:
 | Board     | TX     | RX      |
