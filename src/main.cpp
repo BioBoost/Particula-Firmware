@@ -38,12 +38,14 @@ int main(void) {
         pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
         pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
+        int testError = 0xAA;
 
         message.addTemperature(temperature);
         message.addHumidity(humidity);
         message.addPressure(pressure);
         message.addPM(pm25);
         message.addPM(pm10);
+        message.addError(testError);
 
         node.send(message.getMessage(), message.getLength());
         part_sensor.sleep();
