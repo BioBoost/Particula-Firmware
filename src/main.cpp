@@ -7,6 +7,7 @@
 
 Serial pc(USBTX, USBRX);
 
+using namespace Particula;
 
 int main(void) {
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
