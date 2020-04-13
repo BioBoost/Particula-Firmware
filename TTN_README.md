@@ -29,7 +29,6 @@ To get your keys go to the 'devices' tab and select the device you are configuri
 
 Click the '<>' button to toggle between hex and C-style formating for the keys. Also make sure to use the 'clipboard' button to copy a key (we don't want typos here).
 
-
 ## Checking the connection
 
 After you added the 'particula' application to your account, added your device and configured the firmware with the keys for your device. It's time to compile the firmware, flash it and check if TTN is receiving the packets. To do this, go to the 'data' tab.
