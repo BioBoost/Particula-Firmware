@@ -17,10 +17,21 @@ On the 'overview' tab scroll to the 'devices' section and click the 'register de
 
 ## Configuring the firmware
 
-You now hold all the keys. You will need to use these to configure the 'Particula' firmware so your hardware can communicate with TTN.
+You will need 3 keys to configure the 'particula' firmware for your device and enable it to connect to TTN.
+
+- devEUI
+- appEUI
+- appKEY
+
+To get your keys go to the 'devices' tab and select the device you are configuring.
+
+![TTN Keys Interface](./img/ttn-keys-interface.png)
+
+Click the '<>' button to toggle between hex and C-style formating for the keys. Also make sure to use the 'clipboard' button to copy a key (we don't want typos here).
+
 
 ## Checking the connection
 
-After you added the 'particula' application to your account and you added your device. Then configured the firmware with the keys for your device. You can now check if the messages are being received by TTN by going to the 'data' tab.
+After you added the 'particula' application to your account, added your device and configured the firmware with the keys for your device. It's time to compile the firmware, flash it and check if TTN is receiving the packets. To do this, go to the 'data' tab.
 
-By clicking on one of the received payloads you get an overview of the data (and metadata) thats available.
+By clicking one of the received payloads you can get an overview of the data (and metadata) available.
