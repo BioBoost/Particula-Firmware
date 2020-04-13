@@ -31,6 +31,6 @@ Click the '<>' button to toggle between hex and C-style formating for the keys. 
 
 ## Checking the connection
 
-After you added the 'particula' application to your account, added your device and configured the firmware with the keys for your device. It's time to compile the firmware, flash it and check if TTN is receiving the packets. To do this, go to the 'data' tab.
+After you've added the 'particula' application and the device to your account, and configured the firmware with the keys for the device. It's time to compile the firmware, flash it and check if TTN is receiving the packets. To do this, go to the 'data' tab. On the 'devices' tab you can also see colored circles next to all devices. Green means the device has connected with TTN at least once, orange means TTN never had communications with that device.
 
 By clicking one of the received payloads you can get an overview of the data (and metadata) available.
