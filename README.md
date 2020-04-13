@@ -24,6 +24,8 @@ When this file is set up, run the following command:
 mbed compile -f         // When  device is connected, compile firmware and flash device
 ```
 
+Looking for more information about how to setup or add your device to The Things Network? Have a look [here](./TTN_README.md).
+
 ## Code example
 
 ```cpp
