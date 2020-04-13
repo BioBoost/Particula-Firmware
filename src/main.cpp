@@ -23,7 +23,7 @@ int main(void) {
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
 
     while (true) {
-        ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
+        AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
 
         int sds011WakeUpStatus = part_sensor.wakeUp();
