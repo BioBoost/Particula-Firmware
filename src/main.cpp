@@ -7,28 +7,28 @@
 
 Serial pc(USBTX, USBRX);
 
-using namespace Particula;
+SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
+BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
+SDS011_Particle::SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
 
 int main(void) {
-    SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
-    
-    BME280 tph_sensor = BME280(
-        I2C_SDA_PIN,
-        I2C_SCK_PIN,
-        0x76 << 1
-    );
-
-    SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);
-    
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
 
     while (true) {
-        AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
+        ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
+        
+        if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
+            pc.printf("[Particle sensor] wake up has been succesfull \r\n");
+        } else {
+            pc.printf("[Particle sensor] wake up hasn't been succesfull \r\n");
+        }
 
-        int sds011WakeUpStatus = part_sensor.wakeUp();
-        int sds011ReadStatus = part_sensor.read();
-
+        if(part_sensor.read() == READ_SUCCESSFULL){
+            pc.printf("[Particle sensor] read has been succesfull \r\n");
+        } else {
+            pc.printf("[Particle sensor] read hasn't been succesfull \r\n");
+        }
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
@@ -41,19 +41,19 @@ int main(void) {
         pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
         pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
+
         message.addTemperature(temperature);
         message.addHumidity(humidity);
         message.addPressure(pressure);
         message.addPM(pm25);
         message.addPM(pm10);
 
-        // Add status (error) codes
-        message.addError(sds011WakeUpStatus);
-        message.addError(sds011ReadStatus);
-
         node.send(message.getMessage(), message.getLength());
-        part_sensor.sleep();
-        pc.printf("[Particula] Going to sleep, deep sleep possible (1: yes, 0: no): %i\r\n", sleep_manager_can_deep_sleep());
+        if(part_sensor.sleep() == SLEEP_SUCCESSFULL){
+            pc.printf("[Particle sensor] sleep has been succesfull \r\n");
+        } else {
+            pc.printf("[Particle sensor] sleep hasn't been succesfull \r\n");
+        }
         ThisThread::sleep_for(30000);
     }
     return 0;
