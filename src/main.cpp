@@ -18,7 +18,7 @@ int main(void) {
         0x76 << 1
     );
 
-    SDS011_Particle::SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);
+    SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);
     
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
 
