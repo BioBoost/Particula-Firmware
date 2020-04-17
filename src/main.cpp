@@ -17,8 +17,18 @@ int main(void) {
     while (true) {
         ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
-        part_sensor.wakeUp();
-        while(!part_sensor.read());   // makes sure it has read a correct value
+        
+        if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
+            pc.printf("[Particle sensor] wake up has been succesfull \r\n");
+        } else {
+            pc.printf("[Particle sensor] wake up hasn't been succesfull \r\n");
+        }
+
+        if(part_sensor.read() == READ_SUCCESSFULL){
+            pc.printf("[Particle sensor] read has been succesfull \r\n");
+        } else {
+            pc.printf("[Particle sensor] read hasn't been succesfull \r\n");
+        }
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
@@ -39,7 +49,11 @@ int main(void) {
         message.addPM(pm10);
 
         node.send(message.getMessage(), message.getLength());
-        part_sensor.sleep();
+        if(part_sensor.sleep() == SLEEP_SUCCESSFULL){
+            pc.printf("[Particle sensor] sleep has been succesfull \r\n");
+        } else {
+            pc.printf("[Particle sensor] sleep hasn't been succesfull \r\n");
+        }
         ThisThread::sleep_for(30000);
     }
     return 0;
