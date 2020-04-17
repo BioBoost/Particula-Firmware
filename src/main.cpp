@@ -23,22 +23,17 @@ int main(void) {
         double percentage = readBattery();
 
         if(percentage >= 20.0){   
-            try{
-                part_sensor.wakeUp();
-            } catch(exception e){
-                // add error to lora message
+            if( part_sensor.wakeUp() == WAKEUP_NOT_SUCCESFULL ){}        
                 message.addError(PART_SENSOR_WAKEUP_ERROR);
             }
 
             ThisThread::sleep_for(30000);     
             tph_sensor.awake();
             
-            try {
-                while(!part_sensor.read());
+            if(part_sensor.read() == READ_SUCCESSFULL){
                 message.addPM(part_sensor.getPM25Value());
                 message.addPM(part_sensor.getPM10Value());
-            } catch(exception e){
-                // add error to Lora message
+            } else {
                 message.addError(PART_SENSOR_READ_ERROR);
             }
 
@@ -46,10 +41,8 @@ int main(void) {
             message.addHumidity((double) tph_sensor.getHumidity());
             message.addPressure((double) tph_sensor.getPressure());
 
-            try {
-                part_sensor.sleep();
-            } catch(exception e){
-                // add error to Lora message
+            if(part_sensor.sleep() == SLEEP_NOT_SUCCESFULL){
+            } 
                 message.addError(PART_SENSOR_SLEEP_ERROR);
             }
             tph_sensor.sleep();

@@ -78,7 +78,7 @@ int main(void) {
     while (true) {
         ParticulaLora::AmbiantSensorMessage message;
         part_sensor.wakeUp();
-        while(!part_sensor.read());     // makes sure it has read a correct value
+        part_sensor.read();     // makes sure it has read a correct value
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
