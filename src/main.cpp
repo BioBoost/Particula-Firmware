@@ -15,22 +15,48 @@ SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
 
 int main(void) {
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
-
+    
+    /**
+     * Binary coded error values
+     * bit 0    Particle Sensor Wake-up
+     * bit 1    Particle Sensor Read
+     * bit 2    not used
+     * bit 3    not used
+     * bit 4    not used
+     * bit 5    TPH Sensor Wake-up
+     * bit 6    TPH Sensor Read
+     * bit 7    not used
+     * bit 8    not used
+     * bit 9    not used
+     * bit 10   Battery Charge Output STAT1/-LBO    // See MCP73871 Datasheet page 20 Table 5-1 for more information
+     * bit 11   Battery Charge Output STAT2
+     * bit 12   Battery Charge Output -PG
+     * bit 13   not used
+     * bit 14   not used
+     * bit 15   not used
+    */
+   char error_values = 0x00;
+    
     while (true) {
         AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         
-        if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
+        if(part_sensor.wakeUp() == WAKEUP_SUCCESFULL){
             pc.printf("[Particle sensor] wake up has been succesfull \r\n");
+            error_values |= (1u);         // Set bit 0: 1 for successfull wakeup
         } else {
             pc.printf("[Particle sensor] wake up hasn't been succesfull \r\n");
+            error_values &= ~(1u);      // Set bit 0: 0 for unsuccessfull wakeup
         }
 
         if(part_sensor.read() == READ_SUCCESSFULL){
             pc.printf("[Particle sensor] read has been succesfull \r\n");
+            error_values |= (1u << 1);  // Set bit 1: 1 for successfull read
         } else {
             pc.printf("[Particle sensor] read hasn't been succesfull \r\n");
+            error_values &= ~(1u << 1); // Set bit 1: 0 for unsuccessfull read
         }
+
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa

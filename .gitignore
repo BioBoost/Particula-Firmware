@@ -7,8 +7,6 @@ SDS011_Library/
 ./mbed_settings.py
 src/settings.h
 BUILD
-<<<<<<< HEAD
 todo.md
-=======
-todo.md
->>>>>>> chek-power-state
+errorcodes-test.cpp
+errorcodes-test.exe
