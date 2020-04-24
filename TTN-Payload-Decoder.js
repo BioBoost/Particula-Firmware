@@ -23,20 +23,20 @@ function Decoder(bytes, port) {
       decoded.errors = {
         "SDS011-Wake-up": 0,
         "SDS011-Read": 0,
-        "unused": 0,
-        "unused": 0,
-        "unused": 0,
+        "unused-2": 0,
+        "unused-3": 0,
+        "unused-4": 0,
         "BME280-Wake-up": 0,
         "BME280-Read": 0,
-        "unused": 0,
-        "unused": 0,
-        "unused": 0,
+        "unused-7": 0,
+        "unused-8": 0,
+        "unused-9": 0,
         "Battery-STAT1-LBO": 0,
         "Battery-STAT2": 0,
         "Battery-PG": 0,
-        "unused": 0,
-        "unused": 0,
-        "unused": 0
+        "unused-13": 0,
+        "unused-14": 0,
+        "unused-15": 0
       };
 
       // Check particle sensor wake-up code
