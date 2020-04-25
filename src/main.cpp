@@ -57,6 +57,10 @@ int main(void) {
             error_values &= ~(1u << 1); // Set bit 1: 0 for unsuccessfull read
         }
 
+        // Set bits 5 and 6 to 1 for testing status codes
+        error_values |= (1u << 5);  // Set bit 1: 1 for successfull read
+        error_values |= (1u << 6);  // Set bit 1: 1 for successfull read
+
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
@@ -75,6 +79,7 @@ int main(void) {
         message.addPressure(pressure);
         message.addPM(pm25);
         message.addPM(pm10);
+        message.addError(error_values << 8);
         message.addError(error_values);
 
         node.send(message.getMessage(), message.getLength());

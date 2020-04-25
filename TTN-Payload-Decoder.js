@@ -38,37 +38,37 @@ function Decoder(bytes, port) {
       };
 
       // Check particle sensor wake-up code
-      if (binary_coded_status | 1 == binary_coded_status) {
+      if (1 & binary_coded_status) {
         decoded.hardwareStatus.ParticleSensor.wakeUp = 1;
       }
 
       // Check particle sensor read code
-      if (binary_coded_status | (1 << 1) == binary_coded_status) {
+      if ((1 << 1) & binary_coded_status) {
         decoded.hardwareStatus.ParticleSensor.read = 1;
       }
 
       // Check tph sensor wake-up code
-      if (binary_coded_status | (1 << 5) == binary_coded_status) {
+      if ((1 << 5) & binary_coded_status) {
         decoded.hardwareStatus.TphSensor.wakeUp = 1;
       }
 
       // Check tph sensor read code
-      if (binary_coded_status | (1 << 6) == binary_coded_status) {
+      if ((1 << 6) & binary_coded_status) {
         decoded.hardwareStatus.TphSensor.read = 1;
       }
 
       // // Check battery charge output STAT 1/-LBO code
-      // if (binary_coded_errors | (1 << 10) == binary_coded_errors) {
+      // if ((1 << 10) & binary_coded_status) {
       //   decoded.hardwareStatus["Battery-STAT1-LBO"] = 1;
       // }
 
       // // Check battery charge output STAT2 code
-      // if (binary_coded_errors | (1 << 11) == binary_coded_errors) {
+      // if ((1 << 11) & binary_coded_status) {
       //   decoded.hardwareStatus["Battery-STAT2"] = 1;
       // }
 
       // // Check battery charge output -PG code
-      // if (binary_coded_errors | (1 << 12) == binary_coded_errors) {
+      // if ((1 << 12) & binary_coded_status) {
       //   decoded.hardwareStatus["Battery-PG"] = 1;
       // }
   
