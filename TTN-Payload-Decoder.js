@@ -19,8 +19,8 @@ function Decoder(bytes, port) {
       decoded.pm25 = intToDouble(bytes[6] + bytes[7] * 256, 1);
       decoded.pm10 = intToDouble(bytes[8] + bytes[9] * 256, 1);
 
-      let binary_coded_errors = bytes[10] + bytes[11];
-      decoded.errors = {
+      var binary_coded_status = bytes[10] + bytes[11];
+      decoded.hardwareStatus = {
         "ParticleSensor": {
           "wakeUp": 0,
           "read":0
@@ -38,38 +38,38 @@ function Decoder(bytes, port) {
       };
 
       // Check particle sensor wake-up code
-      if (binary_coded_errors | 1 == binary_coded_errors) {
-        decoded.errors.ParticleSensor.wakeUp = 1;
+      if (binary_coded_status | 1 == binary_coded_status) {
+        decoded.hardwareStatus.ParticleSensor.wakeUp = 1;
       }
 
       // Check particle sensor read code
-      if (binary_coded_errors | (1 << 1) == binary_coded_errors) {
-        decoded.errors.ParticleSensor.read = 1;
+      if (binary_coded_status | (1 << 1) == binary_coded_status) {
+        decoded.hardwareStatus.ParticleSensor.read = 1;
       }
 
       // Check tph sensor wake-up code
-      if (binary_coded_errors | (1 << 5) == binary_coded_errors) {
-        decoded.errors.TphSensor.wakeUp = 1;
+      if (binary_coded_status | (1 << 5) == binary_coded_status) {
+        decoded.hardwareStatus.TphSensor.wakeUp = 1;
       }
 
       // Check tph sensor read code
-      if (binary_coded_errors | (1 << 6) == binary_coded_errors) {
-        decoded.errors.TphSensor.read = 1;
+      if (binary_coded_status | (1 << 6) == binary_coded_status) {
+        decoded.hardwareStatus.TphSensor.read = 1;
       }
 
       // // Check battery charge output STAT 1/-LBO code
       // if (binary_coded_errors | (1 << 10) == binary_coded_errors) {
-      //   decoded.errors["Battery-STAT1-LBO"] = 1;
+      //   decoded.hardwareStatus["Battery-STAT1-LBO"] = 1;
       // }
 
       // // Check battery charge output STAT2 code
       // if (binary_coded_errors | (1 << 11) == binary_coded_errors) {
-      //   decoded.errors["Battery-STAT2"] = 1;
+      //   decoded.hardwareStatus["Battery-STAT2"] = 1;
       // }
 
       // // Check battery charge output -PG code
       // if (binary_coded_errors | (1 << 12) == binary_coded_errors) {
-      //   decoded.errors["Battery-PG"] = 1;
+      //   decoded.hardwareStatus["Battery-PG"] = 1;
       // }
   
     }
