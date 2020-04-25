@@ -57,9 +57,12 @@ int main(void) {
             error_values &= ~(1u << 1); // Set bit 1: 0 for unsuccessfull read
         }
 
+        // Set bit 0 to 1 for testing
+        error_values |= (1u);         // Set bit 0: 1 for successfull wakeup
+
         // Set bits 5 and 6 to 1 for testing status codes
-        error_values |= (1u << 5);  // Set bit 1: 1 for successfull read
-        error_values |= (1u << 6);  // Set bit 1: 1 for successfull read
+        error_values |= (1u << 5);  // Set bit 5: 1 for successfull wakeup
+        error_values |= (1u << 6);  // Set bit 6: 1 for successfull read
 
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
