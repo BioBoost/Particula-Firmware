@@ -42,18 +42,18 @@ int main(void) {
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         
         if(part_sensor.wakeUp() == WAKEUP_SUCCESFULL){
-            pc.printf("[Particle sensor] wake up has been succesfull \r\n");
+            pc.printf("[Particle sensor] wake up has been successfull \r\n");
             error_values |= (1u);         // Set bit 0: 1 for successfull wakeup
         } else {
-            pc.printf("[Particle sensor] wake up hasn't been succesfull \r\n");
+            pc.printf("[Particle sensor] wake up hasn't been successfull \r\n");
             error_values &= ~(1u);      // Set bit 0: 0 for unsuccessfull wakeup
         }
 
         if(part_sensor.read() == READ_SUCCESSFULL){
-            pc.printf("[Particle sensor] read has been succesfull \r\n");
+            pc.printf("[Particle sensor] read has been successfull \r\n");
             error_values |= (1u << 1);  // Set bit 1: 1 for successfull read
         } else {
-            pc.printf("[Particle sensor] read hasn't been succesfull \r\n");
+            pc.printf("[Particle sensor] read hasn't been successfull \r\n");
             error_values &= ~(1u << 1); // Set bit 1: 0 for unsuccessfull read
         }
 
@@ -75,6 +75,7 @@ int main(void) {
         message.addPressure(pressure);
         message.addPM(pm25);
         message.addPM(pm10);
+        message.addError(error_values);
 
         node.send(message.getMessage(), message.getLength());
         if(part_sensor.sleep() == SLEEP_SUCCESSFULL){

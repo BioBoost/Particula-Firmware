@@ -21,58 +21,56 @@ function Decoder(bytes, port) {
 
       let binary_coded_errors = bytes[10] + bytes[11];
       decoded.errors = {
-        "SDS011-Wake-up": 0,
-        "SDS011-Read": 0,
-        "unused-2": 0,
-        "unused-3": 0,
-        "unused-4": 0,
-        "BME280-Wake-up": 0,
-        "BME280-Read": 0,
-        "unused-7": 0,
-        "unused-8": 0,
-        "unused-9": 0,
-        "Battery-STAT1-LBO": 0,
-        "Battery-STAT2": 0,
-        "Battery-PG": 0,
-        "unused-13": 0,
-        "unused-14": 0,
-        "unused-15": 0
+        "ParticleSensor": {
+          "wakeUp": 0,
+          "read":0
+        },
+        "TphSensor": {
+          "wakeUp": 0,
+          "read": 0
+        },
+        "BatteryIndicator": {
+          "chargeStatus": 0,
+          "chargeComplete": 0,
+          "lowBattery": 0,
+          "timerTemperatureFault": 0
+        }
       };
 
       // Check particle sensor wake-up code
       if (binary_coded_errors | 1 == binary_coded_errors) {
-        decoded.errors["SDS011-Wake-up"] = 1;
+        decoded.errors.ParticleSensor.wakeUp = 1;
       }
 
       // Check particle sensor read code
       if (binary_coded_errors | (1 << 1) == binary_coded_errors) {
-        decoded.errors["SDS011-Read"] = 1;
+        decoded.errors.ParticleSensor.read = 1;
       }
 
       // Check tph sensor wake-up code
       if (binary_coded_errors | (1 << 5) == binary_coded_errors) {
-        decoded.errors["BME280-Wake-up"] = 1;
+        decoded.errors.TphSensor.wakeUp = 1;
       }
 
       // Check tph sensor read code
       if (binary_coded_errors | (1 << 6) == binary_coded_errors) {
-        decoded.errors["BME280-Read"] = 1;
+        decoded.errors.TphSensor.read = 1;
       }
 
-      // Check battery charge output STAT 1/-LBO code
-      if (binary_coded_errors | (1 << 10) == binary_coded_errors) {
-        decoded.errors["Battery-STAT1-LBO"] = 1;
-      }
+      // // Check battery charge output STAT 1/-LBO code
+      // if (binary_coded_errors | (1 << 10) == binary_coded_errors) {
+      //   decoded.errors["Battery-STAT1-LBO"] = 1;
+      // }
 
-      // Check battery charge output STAT2 code
-      if (binary_coded_errors | (1 << 11) == binary_coded_errors) {
-        decoded.errors["Battery-STAT2"] = 1;
-      }
+      // // Check battery charge output STAT2 code
+      // if (binary_coded_errors | (1 << 11) == binary_coded_errors) {
+      //   decoded.errors["Battery-STAT2"] = 1;
+      // }
 
-      // Check battery charge output -PG code
-      if (binary_coded_errors | (1 << 12) == binary_coded_errors) {
-        decoded.errors["Battery-PG"] = 1;
-      }
+      // // Check battery charge output -PG code
+      // if (binary_coded_errors | (1 << 12) == binary_coded_errors) {
+      //   decoded.errors["Battery-PG"] = 1;
+      // }
   
     }
     return decoded;
