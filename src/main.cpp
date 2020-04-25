@@ -82,8 +82,7 @@ int main(void) {
         message.addPressure(pressure);
         message.addPM(pm25);
         message.addPM(pm10);
-        message.addError(error_values << 8);
-        message.addError(error_values);
+        message.addStatus(error_values);
 
         node.send(message.getMessage(), message.getLength());
         if(part_sensor.sleep() == SLEEP_SUCCESSFULL){
