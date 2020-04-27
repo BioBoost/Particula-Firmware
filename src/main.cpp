@@ -20,7 +20,7 @@ int main(void) {
         AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         
-        if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
+        if(part_sensor.wakeUp() == WAKEUP_SUCCESFULL){
             pc.printf("[Particle sensor] wake up has been succesfull \r\n");
         } else {
             pc.printf("[Particle sensor] wake up hasn't been succesfull \r\n");

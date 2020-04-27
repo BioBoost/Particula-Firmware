@@ -43,8 +43,8 @@
             "i2c_sck": "D5",
             "uart_tx": "D1",
             "uart_rx": "D0",
-            "lora_nss": "",
-            "lora_reset": ""
+            "lora_nss": "A3",
+            "lora_reset": "A4"
         }
     }
 }
