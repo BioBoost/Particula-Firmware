@@ -151,6 +151,40 @@ You can add your board with it's preferred pins for serial communication to the 
             "uart_tx": "D1",
             "uart_rx": "D0"
         }
+```
+
+## Code example
+
+```cpp
+#include "mbed.h"
+#include "AmbiantSensorMessage.h"
+#include "Simple-LoRaWAN.h"
+#include "settings.h"
+#include "BME280.h"
+
+SimpleLoRaWAN::Node node(keys, pins);
+BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // Use pin-names and I2C address of your device(s)
+SDS011 part_sensor(D1,D0);
+int main(void) {
+    while (true) {
+        ParticulaLora::AmbiantSensorMessage message;
+        part_sensor.wakeUp();
+        part_sensor.read();     // makes sure it has read a correct value
+        double temperature = (double) tph_sensor.getTemperature();  // value in °C
+        double humidity = (double) tph_sensor.getHumidity();        // value in %
+        double pressure = (double) tph_sensor.getPressure();        // value in hPa
+        double pm25 = part_sensor.getPM25Value();   // value in µg/m³
+        double pm10 = part_sensor.getPM10Value();   // value in µg/m³
+
+        message.addTemperature(temperature);
+        message.addHumidity(humidity);
+        message.addPressure(pressure);
+        message.addPM(pm25);
+        message.addPM(pm10);
+
+        node.send(message.getMessage(), message.getLength());
+        part_sensor.sleep();
+        ThisThread::sleep_for(30000);
     }
 ```
 
