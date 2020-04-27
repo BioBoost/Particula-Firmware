@@ -47,7 +47,7 @@ int main(void) {
 
         if (percentage >= 20.0) {
 
-            if(part_sensor.wakeUp() == WAKEUP_SUCCESFULL){
+            if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
                 pc.printf("[Particle sensor] wake up has been successfull \r\n");
                 error_values |= (1u);         // Set bit 0: 1 for successfull wakeup
             } else {
@@ -78,12 +78,12 @@ int main(void) {
             pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
             pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
-            if (part_sensor.sleep() != SLEEP_NOT_SUCCESFULL) {
+            if (part_sensor.sleep() == SLEEP_SUCCESSFULL) {
                 pc.printf("[Particle sensor] sleep has been successfull \r\n");
-                error_values |= (1u << 2);  // Set bit 1: 1 for successfull read
+                error_values |= (1u << 2);  // Set bit 1: 1 for successfull sleep
             } else {
                 pc.printf("[Particle sensor] sleep hasn't been successfull \r\n");
-                error_values &= ~(1u << 2); // Set bit 1: 0 for unsuccessfull read
+                error_values &= ~(1u << 2); // Set bit 1: 0 for unsuccessfull sleep
             }
 
             tph_sensor.sleep();
