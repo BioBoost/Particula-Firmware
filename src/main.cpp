@@ -6,48 +6,95 @@
 #include "SDS011.h"
 #include <exception>
 
+Serial pc(USBTX, USBRX);
 double readBattery(void);
 
 using namespace Particula;
 
 int main(void) {
+    pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
+    
+    /**
+     * Binary coded error values
+     * bit 0    Particle Sensor Wake-up Successful
+     * bit 1    Particle Sensor Read Successful
+     * bit 2    Particle Sensor Sleep Successful
+     * bit 3    not used
+     * bit 4    not used
+     * bit 5    TPH Sensor Wake-up Successful
+     * bit 6    TPH Sensor Read Successful
+     * bit 7    not used
+     * bit 8    not used
+     * bit 9    not used
+     * bit 10   Battery Charge Output STAT1/-LBO    // See MCP73871 Datasheet page 20 Table 5-1 for more information
+     * bit 11   Battery Charge Output STAT2
+     * bit 12   Battery Charge Output -PG
+     * bit 13   not used
+     * bit 14   not used
+     * bit 15   not used
+    */
+    char error_values = 0x00;
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
-    BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
-    SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
-
-    const int PART_SENSOR_WAKEUP_ERROR = 0x00;
-    const int PART_SENSOR_READ_ERROR = 0x01;
-    const int PART_SENSOR_SLEEP_ERROR = 0x02;
+    BME280 tph_sensor = BME280(I2C_SDA_PIN, I2C_SCK_PIN, 0x76 << 1); // D4 en D5 voor kleine nucleo
+    SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
 
     while (true) {
-        AmbiantSensorMessage message;
+        AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
+        pc.printf("\r\n[Particula] Taking measurements ...\r\n");
 
         double percentage = readBattery();
 
-        if (percentage >= 20.0) {   
-            if (part_sensor.wakeUp() == WAKEUP_NOT_SUCCESFULL) {        
-                message.addStatus(PART_SENSOR_WAKEUP_ERROR);
+        if (percentage >= 20.0) {
+
+            if(part_sensor.wakeUp() == WAKEUP_SUCCESFULL){
+                pc.printf("[Particle sensor] wake up has been successfull \r\n");
+                error_values |= (1u);         // Set bit 0: 1 for successfull wakeup
+            } else {
+                pc.printf("[Particle sensor] wake up hasn't been successfull \r\n");
+                error_values &= ~(1u);      // Set bit 0: 0 for unsuccessfull wakeup
             }
 
             ThisThread::sleep_for(30000);     
             tph_sensor.awake();
             
             if(part_sensor.read() == READ_SUCCESSFULL){
-                message.addPM(part_sensor.getPM25Value());
-                message.addPM(part_sensor.getPM10Value());
+                pc.printf("[Particle sensor] read has been successfull \r\n");
+                error_values |= (1u << 1);  // Set bit 1: 1 for successfull read
             } else {
-                message.addStatus(PART_SENSOR_READ_ERROR);
+                pc.printf("[Particle sensor] read hasn't been successfull \r\n");
+                error_values &= ~(1u << 1); // Set bit 1: 0 for unsuccessfull read
             }
 
-            message.addTemperature((double) tph_sensor.getTemperature());
-            message.addHumidity((double) tph_sensor.getHumidity());
-            message.addPressure((double) tph_sensor.getPressure());
+            double temperature = (double) tph_sensor.getTemperature();  // value in °C
+            double humidity = (double) tph_sensor.getHumidity();        // value in %
+            double pressure = (double) tph_sensor.getPressure();        // value in hPa
+            double pm25 = part_sensor.getPM25Value();          // value in µg/m³
+            double pm10 = part_sensor.getPM10Value();          // value in µg/m³
 
-            if(part_sensor.sleep() == SLEEP_NOT_SUCCESFULL){
-                message.addStatus(PART_SENSOR_SLEEP_ERROR);
+            pc.printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
+            pc.printf("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
+            pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
+            pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
+            pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
+
+            if (part_sensor.sleep() != SLEEP_NOT_SUCCESFULL) {
+                pc.printf("[Particle sensor] sleep has been successfull \r\n");
+                error_values |= (1u << 2);  // Set bit 1: 1 for successfull read
+            } else {
+                pc.printf("[Particle sensor] sleep hasn't been successfull \r\n");
+                error_values &= ~(1u << 2); // Set bit 1: 0 for unsuccessfull read
             }
+
             tph_sensor.sleep();
+
+            message.addTemperature(temperature);
+            message.addHumidity(humidity);
+            message.addPressure(pressure);
+            message.addPM(pm25);
+            message.addPM(pm10);
+            message.addStatus(error_values);
+
             node.send(message.getMessage(), message.getLength());           
                   
         } else if(percentage <= 20.0){
