@@ -6,28 +6,28 @@
 #include "SDS011.h"
 #include <exception>
 
-SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
-BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
-SDS011_Particle::SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
+double readBattery(void);
 
-SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
-BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
-SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
+using namespace Particula;
 
 int main(void) {
+
+    SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
+    BME280 tph_sensor = BME280(D14, D15, 0x76 << 1); // D4 en D5 voor kleine nucleo
+    SDS011 part_sensor(D1, D0);  // D1 en D0 voor kleine nucleo
 
     const int PART_SENSOR_WAKEUP_ERROR = 0x00;
     const int PART_SENSOR_READ_ERROR = 0x01;
     const int PART_SENSOR_SLEEP_ERROR = 0x02;
 
     while (true) {
-        ParticulaLora::AmbiantSensorMessage message;
+        AmbiantSensorMessage message;
 
         double percentage = readBattery();
 
-        if(percentage >= 20.0){   
-            if( part_sensor.wakeUp() == WAKEUP_NOT_SUCCESFULL ){}        
-                message.addError(PART_SENSOR_WAKEUP_ERROR);
+        if (percentage >= 20.0) {   
+            if (part_sensor.wakeUp() == WAKEUP_NOT_SUCCESFULL) {        
+                message.addStatus(PART_SENSOR_WAKEUP_ERROR);
             }
 
             ThisThread::sleep_for(30000);     
@@ -37,7 +37,7 @@ int main(void) {
                 message.addPM(part_sensor.getPM25Value());
                 message.addPM(part_sensor.getPM10Value());
             } else {
-                message.addError(PART_SENSOR_READ_ERROR);
+                message.addStatus(PART_SENSOR_READ_ERROR);
             }
 
             message.addTemperature((double) tph_sensor.getTemperature());
@@ -45,8 +45,7 @@ int main(void) {
             message.addPressure((double) tph_sensor.getPressure());
 
             if(part_sensor.sleep() == SLEEP_NOT_SUCCESFULL){
-            } 
-                message.addError(PART_SENSOR_SLEEP_ERROR);
+                message.addStatus(PART_SENSOR_SLEEP_ERROR);
             }
             tph_sensor.sleep();
             node.send(message.getMessage(), message.getLength());           
@@ -59,7 +58,7 @@ int main(void) {
     return 0;
 }
 
-double readBattery(){
+double readBattery(void){
     // class yet to be made 
     return 80.0;
 }
