@@ -50,12 +50,13 @@ int main(void) {
         message.addPM(pm25);
         message.addPM(pm10);
 
-        node.send(message.getMessage(), message.getLength());
         if(part_sensor.sleep() == SLEEP_SUCCESSFULL){
             pc.printf("[Particle sensor] sleep has been succesfull \r\n");
         } else {
             pc.printf("[Particle sensor] sleep hasn't been succesfull \r\n");
         }
+        
+        node.send(message.getMessage(), message.getLength());
         ThisThread::sleep_for(30000);
     }
     return 0;
