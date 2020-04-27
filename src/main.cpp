@@ -20,7 +20,6 @@ int main(void) {
     const int PART_SENSOR_READ_ERROR = 0x01;
     const int PART_SENSOR_SLEEP_ERROR = 0x02;
 
-
     while (true) {
         ParticulaLora::AmbiantSensorMessage message;
 
@@ -61,5 +60,6 @@ int main(void) {
 }
 
 double readBattery(){
+    // class yet to be made 
     return 80.0;
 }
