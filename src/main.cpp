@@ -56,7 +56,7 @@ int main(void) {
             }
 
             ThisThread::sleep_for(30000);     
-            tph_sensor.awake();
+            // tph_sensor.awake();
             
             if(part_sensor.read() == READ_SUCCESSFULL){
                 pc.printf("[Particle sensor] read has been successfull \r\n");
@@ -86,7 +86,7 @@ int main(void) {
                 error_values &= ~(1u << 2); // Set bit 1: 0 for unsuccessfull sleep
             }
 
-            tph_sensor.sleep();
+            // tph_sensor.sleep();
 
             message.addTemperature(temperature);
             message.addHumidity(humidity);
