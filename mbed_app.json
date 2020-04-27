@@ -16,6 +16,14 @@
         "uart_rx": {
             "value": "A5",
             "macro_name": "UART_RX_PIN"
+        },
+        "lora_nss": {
+            "value": "A0",
+            "macro_name": "LORA_NSS_PIN"
+        },
+        "lora_reset": {
+            "value": "A1",
+            "macro_name": "LORA_RESET_PIN"
         }
     },
     "target_overrides": {
@@ -26,13 +34,17 @@
             "i2c_sda": "D14",
             "i2c_sck": "D15",
             "uart_tx": "A4",
-            "uart_rx": "A5"
+            "uart_rx": "A5",
+            "lora_nss": "A0",
+            "lora_reset": "A1"
         },
         "NUCLEO_L432KC": {
             "i2c_sda": "D4",
             "i2c_sck": "D5",
             "uart_tx": "D1",
-            "uart_rx": "D0"
+            "uart_rx": "D0",
+            "lora_nss": "A3",
+            "lora_reset": "A4"
         }
     }
 }
