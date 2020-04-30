@@ -56,7 +56,7 @@ int main(void) {
         ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         part_sensor.wakeUp();
-        part_sensor.read();   
+        part_sensor.read();
         double temperature = (double) tph_sensor.getTemperature();  // value in °C
         double humidity = (double) tph_sensor.getHumidity();        // value in %
         double pressure = (double) tph_sensor.getPressure();        // value in hPa
