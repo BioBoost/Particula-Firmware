@@ -7,6 +7,7 @@
 #include <exception>
 
 Serial pc(USBTX, USBRX);
+mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 double readBattery(void);
 
 using namespace Particula;
@@ -36,7 +37,7 @@ int main(void) {
     char error_values = 0x00;
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
-    BME280 tph_sensor = BME280(I2C_SDA_PIN, I2C_SCK_PIN, 0x76 << 1); // D4 en D5 voor kleine nucleo
+    BME280 tph_sensor = BME280(&i2c_com);
     SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
 
     while (true) {
@@ -66,9 +67,11 @@ int main(void) {
                 error_values &= ~(1u << 1); // Set bit 1: 0 for unsuccessfull read
             }
 
-            double temperature = (double) tph_sensor.getTemperature();  // value in °C
-            double humidity = (double) tph_sensor.getHumidity();        // value in %
-            double pressure = (double) tph_sensor.getPressure();        // value in hPa
+            tph_sensor.awake();
+            double temperature = tph_sensor.temperature();  // value in °C
+            double humidity = tph_sensor.humidity();        // value in %
+            double pressure = tph_sensor.presure();        // value in hPa
+            tph_sensor.sleep();
             double pm25 = part_sensor.getPM25Value();          // value in µg/m³
             double pm10 = part_sensor.getPM10Value();          // value in µg/m³
 
