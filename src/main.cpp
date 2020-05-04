@@ -86,12 +86,10 @@ int main(void) {
 
 
             /**
-             * Particle sensor measurements added to LoRa message
+             * Particle sensor save measurements to add to LoRa message
              */
             double pm25 = part_sensor.getPM25Value();          // value in µg/m³
             double pm10 = part_sensor.getPM10Value();          // value in µg/m³
-            message.addPM(pm25);
-            message.addPM(pm10);
 
 
             /**
@@ -120,7 +118,7 @@ int main(void) {
 
 
             /**
-             * TPH sensor taking measurements
+             * TPH sensor save measurements to add to LoRa message
              */
             bool temperatureValueCorrect = false;
             bool humidityValueCorrect = false;
@@ -149,11 +147,13 @@ int main(void) {
 
 
             /**
-             * TPH sensor measurements added to LoRa message
+             * All sensor measurements added to LoRa message
              */
             message.addTemperature(temperature);
             message.addHumidity(humidity);
             message.addPressure(pressure);
+            message.addPM(pm25);
+            message.addPM(pm10);
 
 
             /**
