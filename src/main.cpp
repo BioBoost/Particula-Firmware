@@ -98,6 +98,8 @@ int main(void) {
                 error_values &= ~(1u << 2); // Set bit 1: 0 for unsuccessfull sleep
             }
 
+            error_values |= (1u << 5);  // 1 for successfull wakeup
+
             /**
              * TPH sensor wakeup
              */
@@ -144,7 +146,7 @@ int main(void) {
 
 
             /**
-             * Add error values to LoRa message and send the message
+             * Add binary coded error to LoRa message and send the message
              */
             message.addStatus(error_values);
             node.send(message.getMessage(), message.getLength());           
