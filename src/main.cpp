@@ -98,7 +98,6 @@ int main(void) {
                 error_values &= ~(1u << 2); // Set bit 1: 0 for unsuccessfull sleep
             }
 
-            error_values |= (1u << 5);  // 1 for successfull wakeup
 
             /**
              * TPH sensor wakeup
@@ -116,9 +115,24 @@ int main(void) {
             /**
              * TPH sensor taking measurements
              */
-            double temperature = tph_sensor.temperature();  // value in °C
-            double humidity = tph_sensor.humidity();        // value in %
-            double pressure = tph_sensor.presure();        // value in hPa
+            bool temperatureValueCorrect = false;
+            bool humidityValueCorrect = false;
+            bool pressureValueCorrect = false;
+            double temperature = tph_sensor.temperature(&temperatureValueCorrect);  // value in °C
+            double humidity = tph_sensor.humidity(&humidityValueCorrect);           // value in %
+            double pressure = tph_sensor.presure(&pressureValueCorrect);            // value in hPa
+
+
+            /**
+             *  TPH sensor check if measurements are valid
+             */
+            if (temperatureValueCorrect && humidityValueCorrect && pressureValueCorrect) {
+                pc.printf("[TPH sensor] read has been successful \r\n");
+                error_values |= (1u << 6);  // 1 for successfull read
+            } else {
+                pc.printf("[TPH sensor] read has been unsuccessful \r\n");
+                error_values &= ~(1u << 6);  // 0 for unsuccessfull read
+            }
 
 
             /**
@@ -146,7 +160,7 @@ int main(void) {
 
 
             /**
-             * Add binary coded error to LoRa message and send the message
+             * Add binary coded errors to LoRa message and send the message
              */
             message.addStatus(error_values);
             node.send(message.getMessage(), message.getLength());           
