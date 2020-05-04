@@ -48,39 +48,48 @@ int main(void) {
 
         if (percentage >= 20.0) {
 
+            /**
+             * Particle sensor wakeup
+             */
             if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
                 pc.printf("[Particle sensor] wake up has been successfull \r\n");
-                error_values |= (1u);         // Set bit 0: 1 for successfull wakeup
+                error_values |= (1u);       // 1 for successfull wakeup
             } else {
                 pc.printf("[Particle sensor] wake up hasn't been successfull \r\n");
-                error_values &= ~(1u);      // Set bit 0: 0 for unsuccessfull wakeup
+                error_values &= ~(1u);      // 0 for unsuccessfull wakeup
             }
 
+
+            /**
+             * Sleep 30 sec. After this time particle sensor measurements are considered correct
+             */
             ThisThread::sleep_for(30000);     
-            // tph_sensor.awake();
             
+        
+            /**
+             * Particle sensor takes measurements
+             */
             if(part_sensor.read() == READ_SUCCESSFULL){
                 pc.printf("[Particle sensor] read has been successfull \r\n");
-                error_values |= (1u << 1);  // Set bit 1: 1 for successfull read
+                error_values |= (1u << 1);  // 1 for successfull read
             } else {
                 pc.printf("[Particle sensor] read hasn't been successfull \r\n");
-                error_values &= ~(1u << 1); // Set bit 1: 0 for unsuccessfull read
+                error_values &= ~(1u << 1); // 0 for unsuccessfull read
             }
 
-            tph_sensor.awake();
-            double temperature = tph_sensor.temperature();  // value in °C
-            double humidity = tph_sensor.humidity();        // value in %
-            double pressure = tph_sensor.presure();        // value in hPa
-            tph_sensor.sleep();
+
+            /**
+             * Particle sensor measurements added to LoRa message
+             */
             double pm25 = part_sensor.getPM25Value();          // value in µg/m³
             double pm10 = part_sensor.getPM10Value();          // value in µg/m³
+            message.addPM(pm25);
+            message.addPM(pm10);
 
-            pc.printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
-            pc.printf("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
-            pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
-            pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
-            pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
+            /**
+             * Particle sensor goes to sleep
+             */
             if (part_sensor.sleep() == SLEEP_SUCCESSFULL) {
                 pc.printf("[Particle sensor] sleep has been successfull \r\n");
                 error_values |= (1u << 2);  // Set bit 1: 1 for successfull sleep
@@ -89,15 +98,55 @@ int main(void) {
                 error_values &= ~(1u << 2); // Set bit 1: 0 for unsuccessfull sleep
             }
 
-            // tph_sensor.sleep();
+            /**
+             * TPH sensor wakeup
+             */
+            tph_sensor.awake();
+            if (tph_sensor.present()) {
+                pc.printf("[TPH sensor] sensor is present \r\n");
+                error_values |= (1u << 5);  // 1 for successfull wakeup
+            } else {
+                pc.printf("[TPH sensor] sensor is not present \r\n");
+                error_values &= ~(1u << 5); // 0 for unsuccessfull wakeup
+            }
 
+
+            /**
+             * TPH sensor taking measurements
+             */
+            double temperature = tph_sensor.temperature();  // value in °C
+            double humidity = tph_sensor.humidity();        // value in %
+            double pressure = tph_sensor.presure();        // value in hPa
+
+
+            /**
+             * TPH sensor goes to sleep
+             */
+            tph_sensor.sleep();
+
+
+            /**
+             * TPH sensor measurements added to LoRa message
+             */
             message.addTemperature(temperature);
             message.addHumidity(humidity);
             message.addPressure(pressure);
-            message.addPM(pm25);
-            message.addPM(pm10);
-            message.addStatus(error_values);
 
+
+            /**
+             * Print out measurements to console for development purposes
+             */
+            pc.printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
+            pc.printf("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
+            pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
+            pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
+            pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
+
+
+            /**
+             * Add error values to LoRa message and send the message
+             */
+            message.addStatus(error_values);
             node.send(message.getMessage(), message.getLength());           
                   
         } else if(percentage <= 20.0){
