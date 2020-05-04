@@ -37,16 +37,13 @@ Looking for more information about how to setup or add your device to The Things
 #include "SDS011.h"
 
 Serial pc(USBTX, USBRX);
+mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 
 int main(void) {
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
 
-    BME280 tph_sensor = BME280(
-        I2C_SDA_PIN,
-        I2C_SCK_PIN,
-        0x76 << 1
-    );
+    BME280 tph_sensor(&i2c_com);
 
     SDS011_Particle::SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);
 
@@ -57,9 +54,11 @@ int main(void) {
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
         part_sensor.wakeUp();
         part_sensor.read();
-        double temperature = (double) tph_sensor.getTemperature();  // value in °C
-        double humidity = (double) tph_sensor.getHumidity();        // value in %
-        double pressure = (double) tph_sensor.getPressure();        // value in hPa
+        tph_sensor.awake();
+        double temperature = tph_sensor.temperature();  // value in °C
+        double humidity = tph_sensor.humidity();        // value in %
+        double pressure = tph_sensor.presure();        // value in hPa
+        tph_sensor.sleep();
         double pm25 = part_sensor.getPM25Value();          // value in µg/m³
         double pm10 = part_sensor.getPM10Value();          // value in µg/m³
 
