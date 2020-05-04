@@ -8,9 +8,17 @@
 
 Serial pc(USBTX, USBRX);
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
-double readBattery(void);
+
+/* disclaimer pins are not right yet */
+DigitalIn stat1(D5);
+DigitalIn stat2(D4);
+DigitalIn PG(D3);
+
 
 using namespace Particula;
+
+bool readBatteryStatus(char*);
+
 
 int main(void) {
     pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
@@ -36,6 +44,7 @@ int main(void) {
     */
     char error_values = 0x00;
 
+
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
     SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
@@ -44,9 +53,7 @@ int main(void) {
         AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
         pc.printf("\r\n[Particula] Taking measurements ...\r\n");
 
-        double percentage = readBattery();
-
-        if (percentage >= 20.0) {
+        if (readBatteryStatus(&error_values)) {
 
             /**
              * Particle sensor wakeup
@@ -92,10 +99,10 @@ int main(void) {
              */
             if (part_sensor.sleep() == SLEEP_SUCCESSFULL) {
                 pc.printf("[Particle sensor] sleep has been successfull \r\n");
-                error_values |= (1u << 2);  // Set bit 1: 1 for successfull sleep
+                error_values |= (1u << 2);  // Set bit 2: 1 for successfull sleep
             } else {
                 pc.printf("[Particle sensor] sleep hasn't been successfull \r\n");
-                error_values &= ~(1u << 2); // Set bit 1: 0 for unsuccessfull sleep
+                error_values &= ~(1u << 2); // Set bit 2: 0 for unsuccessfull sleep
             }
 
 
@@ -165,7 +172,7 @@ int main(void) {
             message.addStatus(error_values);
             node.send(message.getMessage(), message.getLength());           
                   
-        } else if(percentage <= 20.0){
+        } else {
             ThisThread::sleep_for(30000);
         }
         ThisThread::sleep_for(270000); 
@@ -173,7 +180,28 @@ int main(void) {
     return 0;
 }
 
-double readBattery(void){
-    // class yet to be made 
-    return 80.0;
+bool readBatteryStatus(char * error_values){
+    if(stat1 == 1){
+        (*error_values) |= (1u << 10);
+    } else {
+        (*error_values) &= ~(1u << 10);
+    }
+
+    if(stat2 == 1){
+        (*error_values) |= (1u << 11);
+    } else {
+        (*error_values) &= ~(1u << 11);
+    }
+
+    if(PG == 1){
+        (*error_values) |= (1u << 12);
+    } else {
+        (*error_values) &= ~(1u << 12);
+    }
+
+    if (stat1 == 0 && stat2 == 1 && PG==1){
+        return false;
+    }
+
+    return true;
 }
