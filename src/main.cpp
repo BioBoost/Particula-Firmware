@@ -37,7 +37,7 @@ int main(void) {
     char error_values = 0x00;
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
-    BME280 tph_sensor = BME280(&i2c_com);
+    BME280 tph_sensor(&i2c_com);
     SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
 
     while (true) {
