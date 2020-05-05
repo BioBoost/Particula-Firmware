@@ -9,3 +9,8 @@ SimpleLoRaWAN::LoRaWANKeys keys = {
 };
 
 SimpleLoRaWAN::Pinmapping pins = { D11, D12, D13, LORA_NSS_PIN, LORA_RESET_PIN, D2, D3 };  // mosi, miso, clk, nss, reset, dio0, dio1
+
+namespace Particula {
+    const unsigned int PART_SENS_WARMUP_TIME = 30000;   // ms
+    const unsigned int MEASUREMENT_INTERVAL = 300000;   // ms
+};
