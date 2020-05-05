@@ -21,6 +21,10 @@ int main(void) {
     SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
     HardwareStatus hardwareStatus;
 
+    AmbiantSensorMessage versionMessage;
+    versionMessage.addVersionNumber(VERSION);
+    node.send(versionMessage.getMessage(), versionMessage.getLength());
+
     while (true) {
         ThisThread::sleep_for(MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME); 
 
