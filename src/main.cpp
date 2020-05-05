@@ -9,7 +9,7 @@ DigitalIn PG(D3);
 
 using namespace Particula;
 
-bool readBatteryStatus(char*);
+bool readBatteryStatus(HardwareStatus *);
 
 
 int main(void) {
