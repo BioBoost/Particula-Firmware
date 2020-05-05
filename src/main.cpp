@@ -14,7 +14,7 @@ bool readBatteryStatus(char*);
 
 int main(void) {
 
-    printf("\r\n\r\n[Particula] Loading Firmware ...", 0);
+    consoleMessage("\r\n\r\n[Particula] Loading Firmware ...", 0);
     
     /**
      * Binary coded error values
