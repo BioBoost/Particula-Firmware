@@ -7,19 +7,22 @@ namespace Particula {
             HardwareStatus(void);
 
         public:
-            void setTphWakeupSuccess(void);
-            void setTphReadSuccess(void);
-            void setParticleWakeupSuccess(void);
-            void setParticleReadSuccess(void);
-            void setParticleSleepSuccess(void);
-            void setStat1(void);
-            void setStat2(void);
-            void setPg(void);
-            char getStatus(void);
+            void tph_wakeup_failed(void);
+            void tph_read_failed(void);
+            void particle_wakeup_failed(void);
+            void particle_read_failed(void);
+            void particle_sleep_failed(void);
+            void set_stat1(void);
+            void set_stat2(void);
+            void set_pg(void);
+            char get_state(void);
+            bool errors(void);
 
 
         private:
-            char error_values = 0x00;
+            // At the moment only takes into account sensors (not the battery indicator)
+            char hardware_state = 0b0000000001100111;
+            char successful_state = 0b0000000001100111;
             /**
              * Binary coded error values
              * bit 0    Particle Sensor Wake-up Successful

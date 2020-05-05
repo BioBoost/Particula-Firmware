@@ -6,38 +6,42 @@ HardwareStatus::HardwareStatus(void) {
 
 }
 
-void HardwareStatus::setParticleWakeupSuccess(void) {
-    error_values |= (1u); 
+void HardwareStatus::particle_wakeup_failed(void) {
+    hardware_state &= ~(1u); 
 }
 
-void HardwareStatus::setParticleReadSuccess(void) {
-    error_values |= (1u << 1);
+void HardwareStatus::particle_read_failed(void) {
+    hardware_state &= ~(1u << 1);
 }
 
-void HardwareStatus::setParticleSleepSuccess(void) {
-    error_values |= (1u << 2);
+void HardwareStatus::particle_sleep_failed(void) {
+    hardware_state &= ~(1u << 2);
 }
 
-void HardwareStatus::setTphWakeupSuccess(void) {
-    error_values |= (1u << 5);
+void HardwareStatus::tph_wakeup_failed(void) {
+    hardware_state &= ~(1u << 5);
 }
 
-void HardwareStatus::setTphReadSuccess(void) {
-    error_values |= (1u << 6);
+void HardwareStatus::tph_read_failed(void) {
+    hardware_state &= ~(1u << 6);
 }
 
-void HardwareStatus::setStat1(void) {
-    error_values |= (1u << 10);
+void HardwareStatus::set_stat1(void) {
+    hardware_state |= (1u << 10);
 }
 
-void HardwareStatus::setStat2(void) {
-    error_values |= (1u << 11);
+void HardwareStatus::set_stat2(void) {
+    hardware_state |= (1u << 11);
 }
 
-void HardwareStatus::setPg(void) {
-    error_values |= (1u << 12);
+void HardwareStatus::set_pg(void) {
+    hardware_state |= (1u << 12);
 }
 
-char HardwareStatus::getStatus(void) {
-    return error_values;
+char HardwareStatus::get_state(void) {
+    return hardware_state;
+}
+
+bool HardwareStatus::errors(void) {
+    return hardware_state == successful_state;
 }

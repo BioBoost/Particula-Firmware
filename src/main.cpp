@@ -37,9 +37,9 @@ int main(void) {
          */
         if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
             consoleMessage("[Particle sensor] wake up has been successfull \r\n", 0);
-            hardwareStatus.setParticleWakeupSuccess();
         } else {
             consoleMessage("[Particle sensor] wake up hasn't been successfull \r\n", 0);
+            hardwareStatus.particle_wakeup_failed();
         }
 
 
@@ -54,9 +54,9 @@ int main(void) {
          */
         if(part_sensor.read() == READ_SUCCESSFULL){
             consoleMessage("[Particle sensor] read has been successfull \r\n", 0);
-            hardwareStatus.setParticleReadSuccess();
         } else {
             consoleMessage("[Particle sensor] read hasn't been successfull \r\n", 0);
+            hardwareStatus.particle_read_failed();
         }
 
 
@@ -72,9 +72,9 @@ int main(void) {
          */
         if (part_sensor.sleep() == SLEEP_SUCCESSFULL) {
             consoleMessage("[Particle sensor] sleep has been successfull \r\n", 0);
-            hardwareStatus.setParticleSleepSuccess();
         } else {
             consoleMessage("[Particle sensor] sleep hasn't been successfull \r\n", 0);
+            hardwareStatus.particle_sleep_failed();
         }
 
 
@@ -84,9 +84,9 @@ int main(void) {
         tph_sensor.awake();
         if (tph_sensor.present()) {
             consoleMessage("[TPH sensor] sensor is present \r\n", 0);
-            hardwareStatus.setTphWakeupSuccess();
         } else {
             consoleMessage("[TPH sensor] sensor is not present \r\n", 0);
+            hardwareStatus.tph_wakeup_failed();
         }
 
 
@@ -106,9 +106,9 @@ int main(void) {
          */
         if (temperatureValueCorrect && humidityValueCorrect && pressureValueCorrect) {
             consoleMessage("[TPH sensor] read has been successful \r\n", 0);
-            hardwareStatus.setTphReadSuccess();
         } else {
             consoleMessage("[TPH sensor] read has been unsuccessful \r\n", 0);
+            hardwareStatus.tph_read_failed();
         }
 
 
@@ -141,7 +141,9 @@ int main(void) {
         /**
          * Add binary coded errors to LoRa message and send the message
          */
-        message.addStatus(hardwareStatus.getStatus());
+        if (hardwareStatus.errors()) {
+            message.addStatus(hardwareStatus.get_state());
+        }
         node.send(message.getMessage(), message.getLength());           
     }
     return 0;
@@ -149,15 +151,15 @@ int main(void) {
 
 bool readBatteryStatus(HardwareStatus * hardwareStatus){
     if(stat1 == 1){
-        (*hardwareStatus).setStat1();
+        (*hardwareStatus).set_stat1();
     }
 
     if(stat2 == 1){
-        (*hardwareStatus).setStat2();
+        (*hardwareStatus).set_stat2();
     }
 
     if(PG == 1){
-        (*hardwareStatus).setPg();
+        (*hardwareStatus).set_pg();
     }
 
     if (stat1 == 0 && stat2 == 1 && PG==1){
