@@ -1,6 +1,8 @@
+
+
+
 #include "settings.h"
 
-Serial pc(USBTX, USBRX);
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 /* disclaimer pins are not right yet */
@@ -8,14 +10,14 @@ DigitalIn stat1(D5);
 DigitalIn stat2(D4);
 DigitalIn PG(D3);
 
-
 using namespace Particula;
 
 bool readBatteryStatus(char*);
 
 
 int main(void) {
-    pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
+
+    consoleMessage("\r\n\r\n[Particula] Loading Firmware ...", 0);
     
     /**
      * Binary coded error values
@@ -45,7 +47,7 @@ int main(void) {
 
     while (true) {
         AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
-        pc.printf("\r\n[Particula] Taking measurements ...\r\n");
+        consoleMessage("\r\n[Particula] Taking measurements ...\r\n", 0);
 
         if (readBatteryStatus(&error_values)) {
 
@@ -53,10 +55,10 @@ int main(void) {
              * Particle sensor wakeup
              */
             if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
-                pc.printf("[Particle sensor] wake up has been successfull \r\n");
+                consoleMessage("[Particle sensor] wake up has been successfull \r\n", 0);
                 error_values |= (1u);       // 1 for successfull wakeup
             } else {
-                pc.printf("[Particle sensor] wake up hasn't been successfull \r\n");
+                consoleMessage("[Particle sensor] wake up hasn't been successfull \r\n", 0);
                 error_values &= ~(1u);      // 0 for unsuccessfull wakeup
             }
 
@@ -71,10 +73,10 @@ int main(void) {
              * Particle sensor takes measurements
              */
             if(part_sensor.read() == READ_SUCCESSFULL){
-                pc.printf("[Particle sensor] read has been successfull \r\n");
+                consoleMessage("[Particle sensor] read has been successfull \r\n", 0);
                 error_values |= (1u << 1);  // 1 for successfull read
             } else {
-                pc.printf("[Particle sensor] read hasn't been successfull \r\n");
+                consoleMessage("[Particle sensor] read hasn't been successfull \r\n", 0);
                 error_values &= ~(1u << 1); // 0 for unsuccessfull read
             }
 
@@ -90,10 +92,10 @@ int main(void) {
              * Particle sensor goes to sleep
              */
             if (part_sensor.sleep() == SLEEP_SUCCESSFULL) {
-                pc.printf("[Particle sensor] sleep has been successfull \r\n");
+                consoleMessage("[Particle sensor] sleep has been successfull \r\n", 0);
                 error_values |= (1u << 2);  // Set bit 2: 1 for successfull sleep
             } else {
-                pc.printf("[Particle sensor] sleep hasn't been successfull \r\n");
+                consoleMessage("[Particle sensor] sleep hasn't been successfull \r\n", 0);
                 error_values &= ~(1u << 2); // Set bit 2: 0 for unsuccessfull sleep
             }
 
@@ -103,10 +105,10 @@ int main(void) {
              */
             tph_sensor.awake();
             if (tph_sensor.present()) {
-                pc.printf("[TPH sensor] sensor is present \r\n");
+                consoleMessage("[TPH sensor] sensor is present \r\n", 0);
                 error_values |= (1u << 5);  // 1 for successfull wakeup
             } else {
-                pc.printf("[TPH sensor] sensor is not present \r\n");
+                consoleMessage("[TPH sensor] sensor is not present \r\n", 0);
                 error_values &= ~(1u << 5); // 0 for unsuccessfull wakeup
             }
 
@@ -126,10 +128,10 @@ int main(void) {
              *  TPH sensor check if measurements are valid
              */
             if (temperatureValueCorrect && humidityValueCorrect && pressureValueCorrect) {
-                pc.printf("[TPH sensor] read has been successful \r\n");
+                consoleMessage("[TPH sensor] read has been successful \r\n", 0);
                 error_values |= (1u << 6);  // 1 for successfull read
             } else {
-                pc.printf("[TPH sensor] read has been unsuccessful \r\n");
+                consoleMessage("[TPH sensor] read has been unsuccessful \r\n", 0);
                 error_values &= ~(1u << 6);  // 0 for unsuccessfull read
             }
 
@@ -153,11 +155,11 @@ int main(void) {
             /**
              * Print out measurements to console for development purposes
              */
-            pc.printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
-            pc.printf("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
-            pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
-            pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
-            pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
+            consoleMessage("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
+            consoleMessage("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
+            consoleMessage("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
+            consoleMessage("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
+            consoleMessage("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
 
             /**
