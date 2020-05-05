@@ -1,10 +1,4 @@
-#include "mbed.h"
-#include "AmbiantSensorMessage.h"
-#include "Simple-LoRaWAN.h"
 #include "settings.h"
-#include "BME280.h"
-#include "SDS011.h"
-#include <exception>
 
 Serial pc(USBTX, USBRX);
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
