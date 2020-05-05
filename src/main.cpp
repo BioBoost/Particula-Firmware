@@ -1,6 +1,3 @@
-
-
-
 #include "settings.h"
 
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
