@@ -15,37 +15,16 @@ bool readBatteryStatus(char*);
 int main(void) {
 
     consoleMessage("\r\n\r\n[Particula] Loading Firmware ...", 0);
-    
-    /**
-     * Binary coded error values
-     * bit 0    Particle Sensor Wake-up Successful
-     * bit 1    Particle Sensor Read Successful
-     * bit 2    Particle Sensor Sleep Successful
-     * bit 3    not used
-     * bit 4    not used
-     * bit 5    TPH Sensor Wake-up Successful
-     * bit 6    TPH Sensor Read Successful
-     * bit 7    not used
-     * bit 8    not used
-     * bit 9    not used
-     * bit 10   Battery Charge Output STAT1/-LBO    // See MCP73871 Datasheet page 20 Table 5-1 for more information
-     * bit 11   Battery Charge Output STAT2
-     * bit 12   Battery Charge Output -PG
-     * bit 13   not used
-     * bit 14   not used
-     * bit 15   not used
-    */
-    char error_values = 0x00;
-
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
     SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
+    HardwareStatus hardwareStatus;
 
     while (true) {
-        ThisThread::sleep_for(MEASUREMENT_INTERVAL); 
-        
-        if (!readBatteryStatus(&error_values)) {
+        ThisThread::sleep_for(MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME); 
+
+        if (!readBatteryStatus(&hardwareStatus)) {
             continue;
         }
 
@@ -58,10 +37,9 @@ int main(void) {
          */
         if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
             consoleMessage("[Particle sensor] wake up has been successfull \r\n", 0);
-            error_values |= (1u);       // 1 for successfull wakeup
+            hardwareStatus.setParticleWakeupSuccess();
         } else {
             consoleMessage("[Particle sensor] wake up hasn't been successfull \r\n", 0);
-            error_values &= ~(1u);      // 0 for unsuccessfull wakeup
         }
 
 
@@ -76,10 +54,9 @@ int main(void) {
          */
         if(part_sensor.read() == READ_SUCCESSFULL){
             consoleMessage("[Particle sensor] read has been successfull \r\n", 0);
-            error_values |= (1u << 1);  // 1 for successfull read
+            hardwareStatus.setParticleReadSuccess();
         } else {
             consoleMessage("[Particle sensor] read hasn't been successfull \r\n", 0);
-            error_values &= ~(1u << 1); // 0 for unsuccessfull read
         }
 
 
@@ -95,10 +72,9 @@ int main(void) {
          */
         if (part_sensor.sleep() == SLEEP_SUCCESSFULL) {
             consoleMessage("[Particle sensor] sleep has been successfull \r\n", 0);
-            error_values |= (1u << 2);  // Set bit 2: 1 for successfull sleep
+            hardwareStatus.setParticleSleepSuccess();
         } else {
             consoleMessage("[Particle sensor] sleep hasn't been successfull \r\n", 0);
-            error_values &= ~(1u << 2); // Set bit 2: 0 for unsuccessfull sleep
         }
 
 
@@ -108,10 +84,9 @@ int main(void) {
         tph_sensor.awake();
         if (tph_sensor.present()) {
             consoleMessage("[TPH sensor] sensor is present \r\n", 0);
-            error_values |= (1u << 5);  // 1 for successfull wakeup
+            hardwareStatus.setTphWakeupSuccess();
         } else {
             consoleMessage("[TPH sensor] sensor is not present \r\n", 0);
-            error_values &= ~(1u << 5); // 0 for unsuccessfull wakeup
         }
 
 
@@ -131,10 +106,9 @@ int main(void) {
          */
         if (temperatureValueCorrect && humidityValueCorrect && pressureValueCorrect) {
             consoleMessage("[TPH sensor] read has been successful \r\n", 0);
-            error_values |= (1u << 6);  // 1 for successfull read
+            hardwareStatus.setTphReadSuccess();
         } else {
             consoleMessage("[TPH sensor] read has been unsuccessful \r\n", 0);
-            error_values &= ~(1u << 6);  // 0 for unsuccessfull read
         }
 
 
@@ -167,29 +141,23 @@ int main(void) {
         /**
          * Add binary coded errors to LoRa message and send the message
          */
-        message.addStatus(error_values);
+        message.addStatus(hardwareStatus.getStatus());
         node.send(message.getMessage(), message.getLength());           
     }
     return 0;
 }
 
-bool readBatteryStatus(char * error_values){
+bool readBatteryStatus(HardwareStatus * hardwareStatus){
     if(stat1 == 1){
-        (*error_values) |= (1u << 10);
-    } else {
-        (*error_values) &= ~(1u << 10);
+        (*hardwareStatus).setStat1();
     }
 
     if(stat2 == 1){
-        (*error_values) |= (1u << 11);
-    } else {
-        (*error_values) &= ~(1u << 11);
+        (*hardwareStatus).setStat2();
     }
 
     if(PG == 1){
-        (*error_values) |= (1u << 12);
-    } else {
-        (*error_values) &= ~(1u << 12);
+        (*hardwareStatus).setPg();
     }
 
     if (stat1 == 0 && stat2 == 1 && PG==1){

@@ -7,13 +7,15 @@ namespace Particula {
             HardwareStatus(void);
 
         public:
-            // setTphWakeupStatus
-            // setTphReadStatus
-            void setParticleWakeupStatus(void);
-            // setParticleSleepStatus
-            // setParticleReadStatus
-
-            // getStatusValues
+            void setTphWakeupSuccess(void);
+            void setTphReadSuccess(void);
+            void setParticleWakeupSuccess(void);
+            void setParticleReadSuccess(void);
+            void setParticleSleepSuccess(void);
+            void setStat1(void);
+            void setStat2(void);
+            void setPg(void);
+            char getStatus(void);
 
 
         private:
