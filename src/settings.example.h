@@ -1,6 +1,7 @@
 #pragma once
 
 #define PRODUCTION_ENVIRONMENT true
+#define VERSION 0.7
 
 #if PRODUCTION_ENVIRONMENT
 #define consoleMessage(string, value1)
