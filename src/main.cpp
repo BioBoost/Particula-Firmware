@@ -70,7 +70,7 @@ int main(void) {
             /**
              * Sleep 30 sec. After this time particle sensor measurements are considered correct
              */
-            ThisThread::sleep_for(30000);     
+            ThisThread::sleep_for(PART_SENS_WARMUP_TIME);     
             
         
             /**
@@ -173,9 +173,9 @@ int main(void) {
             node.send(message.getMessage(), message.getLength());           
                   
         } else {
-            ThisThread::sleep_for(30000);
+            ThisThread::sleep_for(PART_SENS_WARMUP_TIME);
         }
-        ThisThread::sleep_for(270000); 
+        ThisThread::sleep_for(MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME); 
     }
     return 0;
 }
