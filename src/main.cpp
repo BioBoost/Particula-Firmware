@@ -33,9 +33,10 @@ int main(void) {
 
     while (true) {
         HardwareStatus hardwareStatus;
-        ThisThread::sleep_for(MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME); 
+        const int SLEEP_TIME = MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME;
 
         if (!readBatteryStatus(&hardwareStatus)) {
+            ThisThread::sleep_for(SLEEP_TIME);
             continue;
         }
 
@@ -158,7 +159,8 @@ int main(void) {
         } else {
             consoleMessage("[Particula] No errors detected \r\n", 0);
         }
-        node.send(message.getMessage(), message.getLength());           
+        node.send(message.getMessage(), message.getLength());
+        ThisThread::sleep_for(SLEEP_TIME);            
     }
     return 0;
 }
