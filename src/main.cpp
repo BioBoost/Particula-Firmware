@@ -1,4 +1,11 @@
 #include "settings.h"
+#include "BME280.h"
+#include "SDS011.h"
+#include <exception>
+#include "mbed.h"
+#include "Simple-LoRaWAN.h"
+#include "AmbiantSensorMessage.h"
+#include "../lib/hardwarestatus.h"
 
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
@@ -19,13 +26,13 @@ int main(void) {
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
     SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
-    HardwareStatus hardwareStatus;
 
     AmbiantSensorMessage versionMessage;
     versionMessage.addVersionNumber(VERSION);
     node.send(versionMessage.getMessage(), versionMessage.getLength());
 
     while (true) {
+        HardwareStatus hardwareStatus;
         ThisThread::sleep_for(MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME); 
 
         if (!readBatteryStatus(&hardwareStatus)) {
@@ -146,7 +153,10 @@ int main(void) {
          * Add binary coded errors to LoRa message and send the message
          */
         if (hardwareStatus.errors()) {
+            consoleMessage("[Particula] Errors detected, adding them to lora message \r\n", 0);
             message.addStatus(hardwareStatus.get_state());
+        } else {
+            consoleMessage("[Particula] No errors detected \r\n", 0);
         }
         node.send(message.getMessage(), message.getLength());           
     }

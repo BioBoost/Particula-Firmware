@@ -43,5 +43,5 @@ char HardwareStatus::get_state(void) {
 }
 
 bool HardwareStatus::errors(void) {
-    return hardware_state == successful_state;
+    return (hardware_state != successful_state);
 }
