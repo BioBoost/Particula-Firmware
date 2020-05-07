@@ -7,7 +7,7 @@ HardwareStatus::HardwareStatus(void) {
 }
 
 void HardwareStatus::particle_wakeup_failed(void) {
-    hardware_state &= ~(1u); 
+    hardware_state &= ~(1u << 0); 
 }
 
 void HardwareStatus::particle_read_failed(void) {

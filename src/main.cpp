@@ -155,6 +155,7 @@ int main(void) {
          */
         if (hardwareStatus.errors()) {
             consoleMessage("[Particula] Errors detected, adding them to lora message \r\n", 0);
+            consoleMessage("[Particula] Hardware status (hex): %X \r\n", hardwareStatus.get_state());
             message.addStatus(hardwareStatus.get_state());
         } else {
             consoleMessage("[Particula] No errors detected \r\n", 0);

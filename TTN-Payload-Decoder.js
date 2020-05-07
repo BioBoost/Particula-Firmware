@@ -38,7 +38,7 @@ function Decoder(bytes, port) {
         }
       };
       if (bytes.length > 10) {
-        var binary_coded_status = bytes[10] + bytes[11];
+        var binary_coded_status = bytes[10] + (bytes[11] * 256);
 
         /**
          * Particle sensor status codes

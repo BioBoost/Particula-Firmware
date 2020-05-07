@@ -21,7 +21,7 @@ namespace Particula {
 
         private:
             // At the moment only takes into account sensors (not the battery indicator)
-            char hardware_state = 0b0000000001100111;
+            char hardware_state =   0b0000000001100111;
             char successful_state = 0b0000000001100111;
             /**
              * Binary coded error values
