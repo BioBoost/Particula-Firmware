@@ -164,19 +164,19 @@ You can add your board with it's preferred pins for serial communication to the 
 {
   "hardwareStatus": {
     "BatteryIndicator": {
-      "chargeComplete": 0,
-      "chargeStatus": 0,
-      "lowBattery": 0,
-      "timerTemperatureFault": 0
+      "chargeComplete": true,
+      "chargeStatus": true,
+      "lowBattery": true,
+      "timerTemperatureFault": true
     },
     "ParticleSensor": {
-      "readSuccessful": 0,
-      "sleepSuccessful": 0,
-      "wakeUpSuccessful": 0
+      "readSuccessful": true,
+      "sleepSuccessful": true,
+      "wakeUpSuccessful": true
     },
     "TphSensor": {
-      "readSuccessful": 0,
-      "wakeUpSuccessful": 0
+      "readSuccessful": true,
+      "wakeUpSuccessful": true
     }
   },
   "humidity": 54.97,
