@@ -1,15 +1,24 @@
 #include "settings.h"
+#include "BME280.h"
+#include "SDS011.h"
+#include <exception>
+#include "mbed.h"
+#include "Simple-LoRaWAN.h"
+#include "AmbiantSensorMessage.h"
+#include "../lib/hardwarestatus.h"
+#include "BatteryManagement.h"
+#include "ParticulaApp.h"
 
-mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
+
+//mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 /* disclaimer pins are not right yet */
-DigitalIn stat1(D5);
-DigitalIn stat2(D4);
-DigitalIn PG(D3);
+// DigitalIn stat1(D5);
+// DigitalIn stat2(D4);
+// DigitalIn PG(D3);
 
 using namespace Particula;
 
-bool readBatteryStatus(HardwareStatus *);
 
 
 int main(void) {
@@ -18,8 +27,10 @@ int main(void) {
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
-    SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
+    SDS011 part_sensor(D5, D4);  // D1 en D0 voor kleine nucleo
     HardwareStatus hardwareStatus;
+    BatteryManagement batterymanager(stat1,stat2,PG);
+    ParticulaApp particulaApp;
 
     AmbiantSensorMessage versionMessage;
     versionMessage.addVersionNumber(VERSION);
@@ -28,7 +39,7 @@ int main(void) {
     while (true) {
         ThisThread::sleep_for(MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME); 
 
-        if (!readBatteryStatus(&hardwareStatus)) {
+        if (!batterymanager.BatterySufficient(&hardwareStatus)) {
             continue;
         }
 
@@ -39,11 +50,10 @@ int main(void) {
         /**
          * Particle sensor wakeup
          */
-        if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
+        if(particulaApp.partSensorWake(&part_sensor,&hardwareStatus)){
             consoleMessage("[Particle sensor] wake up has been successfull \r\n", 0);
         } else {
             consoleMessage("[Particle sensor] wake up hasn't been successfull \r\n", 0);
-            hardwareStatus.particle_wakeup_failed();
         }
 
 
@@ -56,95 +66,72 @@ int main(void) {
         /**
          * Particle sensor takes measurements
          */
-        if(part_sensor.read() == READ_SUCCESSFULL){
+        if(particulaApp.partSensorRead(&part_sensor,&hardwareStatus)){
             consoleMessage("[Particle sensor] read has been successfull \r\n", 0);
         } else {
             consoleMessage("[Particle sensor] read hasn't been successfull \r\n", 0);
-            hardwareStatus.particle_read_failed();
         }
-
-
-        /**
-         * Particle sensor save measurements to add to LoRa message
-         */
-        double pm25 = part_sensor.getPM25Value();          // value in µg/m³
-        double pm10 = part_sensor.getPM10Value();          // value in µg/m³
 
 
         /**
          * Particle sensor goes to sleep
          */
-        if (part_sensor.sleep() == SLEEP_SUCCESSFULL) {
+        if (particulaApp.partSensorSleep(&part_sensor,&hardwareStatus)) {
             consoleMessage("[Particle sensor] sleep has been successfull \r\n", 0);
         } else {
             consoleMessage("[Particle sensor] sleep hasn't been successfull \r\n", 0);
-            hardwareStatus.particle_sleep_failed();
         }
 
 
         /**
          * TPH sensor wakeup
          */
-        tph_sensor.awake();
-        if (tph_sensor.present()) {
+        if (particulaApp.tphSensorWake(&tph_sensor,&hardwareStatus)) {
             consoleMessage("[TPH sensor] sensor is present \r\n", 0);
         } else {
             consoleMessage("[TPH sensor] sensor is not present \r\n", 0);
-            hardwareStatus.tph_wakeup_failed();
         }
 
 
         /**
-         * TPH sensor save measurements to add to LoRa message
+         * TPH sensor save measurements to add to LoRa message and check if measurements are valid
          */
-        bool temperatureValueCorrect = false;
-        bool humidityValueCorrect = false;
-        bool pressureValueCorrect = false;
-        double temperature = tph_sensor.temperature(&temperatureValueCorrect);  // value in °C
-        double humidity = tph_sensor.humidity(&humidityValueCorrect);           // value in %
-        double pressure = tph_sensor.presure(&pressureValueCorrect);            // value in hPa
 
-
-        /**
-         *  TPH sensor check if measurements are valid
-         */
-        if (temperatureValueCorrect && humidityValueCorrect && pressureValueCorrect) {
+        
+        if (particulaApp.tphSensorRead(&tph_sensor,&hardwareStatus)){
             consoleMessage("[TPH sensor] read has been successful \r\n", 0);
         } else {
             consoleMessage("[TPH sensor] read has been unsuccessful \r\n", 0);
-            hardwareStatus.tph_read_failed();
         }
 
 
         /**
          * TPH sensor goes to sleep
          */
-        tph_sensor.sleep();
+        particulaApp.tphSensorSleep(&tph_sensor);
 
 
         /**
          * All sensor measurements added to LoRa message
          */
-        message.addTemperature(temperature);
-        message.addHumidity(humidity);
-        message.addPressure(pressure);
-        message.addPM(pm25);
-        message.addPM(pm10);
-
+        particulaApp.addToLoRaMessage(&message);
 
         /**
          * Print out measurements to console for development purposes
          */
-        consoleMessage("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
-        consoleMessage("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
-        consoleMessage("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
-        consoleMessage("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
-        consoleMessage("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
+
+        // !!!!to be remade!!!! //
+        // consoleMessage("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
+        // consoleMessage("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
+        // consoleMessage("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
+        // consoleMessage("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
+        // consoleMessage("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
 
         /**
          * Add binary coded errors to LoRa message and send the message
          */
+        // !!!!to be remade!!!! //
         if (hardwareStatus.errors()) {
             message.addStatus(hardwareStatus.get_state());
         }
@@ -153,22 +140,3 @@ int main(void) {
     return 0;
 }
 
-bool readBatteryStatus(HardwareStatus * hardwareStatus){
-    if(stat1 == 1){
-        (*hardwareStatus).set_stat1();
-    }
-
-    if(stat2 == 1){
-        (*hardwareStatus).set_stat2();
-    }
-
-    if(PG == 1){
-        (*hardwareStatus).set_pg();
-    }
-
-    if (stat1 == 0 && stat2 == 1 && PG==1){
-        return false;
-    }
-
-    return true;
-}
