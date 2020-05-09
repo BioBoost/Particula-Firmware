@@ -9,17 +9,14 @@
 #include "BatteryManagement.h"
 #include "ParticulaApp.h"
 
+using namespace Particula;
 
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 /* disclaimer pins are not right yet */
-DigitalIn stat1(D5);
-DigitalIn stat2(D4);
-DigitalIn PG(D3);
-
-using namespace Particula;
-
-
+PinName stat1(D5);
+PinName stat2(D4);
+PinName PG(D3);
 
 int main(void) {
 
@@ -40,9 +37,10 @@ int main(void) {
         HardwareStatus hardwareStatus;
         const int SLEEP_TIME = MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME;
 
-        if (!batterymanager.BatterySufficient(&hardwareStatus)) {
-            continue;
-        }
+        // if (!batterymanager.BatterySufficient(&hardwareStatus)) {
+        //     printf("it's looping \r\n");
+        //     continue;
+        // }
 
         AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
         consoleMessage("\r\n[Particula] Taking measurements ...\r\n", 0);
@@ -51,7 +49,8 @@ int main(void) {
         /**
          * Particle sensor wakeup
          */
-        consoleMessage(particulaApp.partSensorWake(&part_sensor,&hardwareStatus),0);        
+        char * partSensorWakeup = particulaApp.partSensorWake(&part_sensor, &hardwareStatus);
+        consoleMessage(partSensorWakeup, 0);        
  
         /**
          * Sleep 30 sec. After this time particle sensor measurements are considered correct
@@ -61,32 +60,38 @@ int main(void) {
         /**
          * Particle sensor takes measurements
          */
-        consoleMessage(particulaApp.partSensorRead(&part_sensor,&hardwareStatus),0);
+        char * partSensorRead = particulaApp.partSensorRead(&part_sensor, &hardwareStatus);
+        consoleMessage(partSensorRead, 0);
 
         /**
          * Particle sensor goes to sleep
          */
-        consoleMessage(particulaApp.partSensorSleep(&part_sensor,&hardwareStatus),0);
+        char * partSensorSleep = particulaApp.partSensorSleep(&part_sensor, &hardwareStatus);
+        consoleMessage(partSensorSleep, 0);
 
         /**
          * TPH sensor wakeup
          */
-        consoleMessage(particulaApp.tphSensorWake(&tph_sensor,&hardwareStatus),0);
+        char * tphSensorWakeup = particulaApp.tphSensorWake(&tph_sensor, &hardwareStatus);
+        consoleMessage(tphSensorWakeup, 0);
 
         /**
          * TPH sensor save measurements to add to LoRa message and check if measurements are valid
          */
-        consoleMessage(particulaApp.tphSensorRead(&tph_sensor,&hardwareStatus),0);      
+        char * tphSensorRead = particulaApp.tphSensorRead(&tph_sensor, &hardwareStatus);
+        consoleMessage(tphSensorRead, 0);      
 
         /**
          * TPH sensor goes to sleep
          */
-        consoleMessage(particulaApp.tphSensorSleep(&tph_sensor),0);
+        char * tphSensorSleep = particulaApp.tphSensorSleep(&tph_sensor);
+        consoleMessage(tphSensorSleep, 0);
 
         /**
          * All sensor measurements and binary coded errors added to LoRa message
          */
-        consoleMessage(particulaApp.addToLoRaMessage(&message,&hardwareStatus),0);
+        char * addToLoraMessage = particulaApp.addToLoRaMessage(&message, &hardwareStatus);
+        consoleMessage(addToLoraMessage, 0);
         consoleMessage("[Particula] Hardware status (hex): %X \r\n", hardwareStatus.get_state());
 
         /**
