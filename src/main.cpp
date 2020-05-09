@@ -27,17 +27,18 @@ int main(void) {
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
-    SDS011 part_sensor(D5, D4);  // D1 en D0 voor kleine nucleo
     HardwareStatus hardwareStatus;
     BatteryManagement batterymanager(stat1,stat2,PG);
     ParticulaApp particulaApp;
+    SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
 
     AmbiantSensorMessage versionMessage;
     versionMessage.addVersionNumber(VERSION);
     node.send(versionMessage.getMessage(), versionMessage.getLength());
 
     while (true) {
-        ThisThread::sleep_for(MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME); 
+        HardwareStatus hardwareStatus;
+        const int SLEEP_TIME = MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME;
 
         if (!batterymanager.BatterySufficient(&hardwareStatus)) {
             continue;
@@ -133,9 +134,14 @@ int main(void) {
          */
         // !!!!to be remade!!!! //
         if (hardwareStatus.errors()) {
+            consoleMessage("[Particula] Errors detected, adding them to lora message \r\n", 0);
+            consoleMessage("[Particula] Hardware status (hex): %X \r\n", hardwareStatus.get_state());
             message.addStatus(hardwareStatus.get_state());
+        } else {
+            consoleMessage("[Particula] No errors detected \r\n", 0);
         }
-        node.send(message.getMessage(), message.getLength());           
+        node.send(message.getMessage(), message.getLength());
+        ThisThread::sleep_for(SLEEP_TIME);            
     }
     return 0;
 }
