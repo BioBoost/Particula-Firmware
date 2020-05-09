@@ -10,12 +10,12 @@
 #include "ParticulaApp.h"
 
 
-//mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
+mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 /* disclaimer pins are not right yet */
-// DigitalIn stat1(D5);
-// DigitalIn stat2(D4);
-// DigitalIn PG(D3);
+DigitalIn stat1(D5);
+DigitalIn stat2(D4);
+DigitalIn PG(D3);
 
 using namespace Particula;
 
@@ -51,95 +51,54 @@ int main(void) {
         /**
          * Particle sensor wakeup
          */
-        if(particulaApp.partSensorWake(&part_sensor,&hardwareStatus)){
-            consoleMessage("[Particle sensor] wake up has been successfull \r\n", 0);
-        } else {
-            consoleMessage("[Particle sensor] wake up hasn't been successfull \r\n", 0);
-        }
-
-
+        consoleMessage(particulaApp.partSensorWake(&part_sensor,&hardwareStatus),0);        
+ 
         /**
          * Sleep 30 sec. After this time particle sensor measurements are considered correct
          */
-        ThisThread::sleep_for(PART_SENS_WARMUP_TIME);     
-        
+        ThisThread::sleep_for(PART_SENS_WARMUP_TIME);             
     
         /**
          * Particle sensor takes measurements
          */
-        if(particulaApp.partSensorRead(&part_sensor,&hardwareStatus)){
-            consoleMessage("[Particle sensor] read has been successfull \r\n", 0);
-        } else {
-            consoleMessage("[Particle sensor] read hasn't been successfull \r\n", 0);
-        }
-
+        consoleMessage(particulaApp.partSensorRead(&part_sensor,&hardwareStatus),0);
 
         /**
          * Particle sensor goes to sleep
          */
-        if (particulaApp.partSensorSleep(&part_sensor,&hardwareStatus)) {
-            consoleMessage("[Particle sensor] sleep has been successfull \r\n", 0);
-        } else {
-            consoleMessage("[Particle sensor] sleep hasn't been successfull \r\n", 0);
-        }
-
+        consoleMessage(particulaApp.partSensorSleep(&part_sensor,&hardwareStatus),0);
 
         /**
          * TPH sensor wakeup
          */
-        if (particulaApp.tphSensorWake(&tph_sensor,&hardwareStatus)) {
-            consoleMessage("[TPH sensor] sensor is present \r\n", 0);
-        } else {
-            consoleMessage("[TPH sensor] sensor is not present \r\n", 0);
-        }
-
+        consoleMessage(particulaApp.tphSensorWake(&tph_sensor,&hardwareStatus),0);
 
         /**
          * TPH sensor save measurements to add to LoRa message and check if measurements are valid
          */
-
-        
-        if (particulaApp.tphSensorRead(&tph_sensor,&hardwareStatus)){
-            consoleMessage("[TPH sensor] read has been successful \r\n", 0);
-        } else {
-            consoleMessage("[TPH sensor] read has been unsuccessful \r\n", 0);
-        }
-
+        consoleMessage(particulaApp.tphSensorRead(&tph_sensor,&hardwareStatus),0);      
 
         /**
          * TPH sensor goes to sleep
          */
-        particulaApp.tphSensorSleep(&tph_sensor);
-
+        consoleMessage(particulaApp.tphSensorSleep(&tph_sensor),0);
 
         /**
-         * All sensor measurements added to LoRa message
+         * All sensor measurements and binary coded errors added to LoRa message
          */
-        particulaApp.addToLoRaMessage(&message);
+        consoleMessage(particulaApp.addToLoRaMessage(&message,&hardwareStatus),0);
+        consoleMessage("[Particula] Hardware status (hex): %X \r\n", hardwareStatus.get_state());
 
         /**
          * Print out measurements to console for development purposes
          */
 
-        // !!!!to be remade!!!! //
-        // consoleMessage("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
-        // consoleMessage("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
-        // consoleMessage("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
-        // consoleMessage("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
-        // consoleMessage("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
+        consoleMessage("[Particula] Measered temperature:  %4.2f °C\r\n", particulaApp.returnTemperature());
+        consoleMessage("[Particula] Measered humidity:     %4.2f %%\r\n", particulaApp.returnHumidity());
+        consoleMessage("[Particula] Measered pressure:     %4.2f hPa\r\n", particulaApp.returnPressure());
+        consoleMessage("[Particula] Measered PM25:         %4.2f µg/m3\r\n", particulaApp.returnPm25());
+        consoleMessage("[Particula] Measered PM10:         %4.2f µg/m3\r\n", particulaApp.returnPm10());
 
-
-        /**
-         * Add binary coded errors to LoRa message and send the message
-         */
-        // !!!!to be remade!!!! //
-        if (hardwareStatus.errors()) {
-            consoleMessage("[Particula] Errors detected, adding them to lora message \r\n", 0);
-            consoleMessage("[Particula] Hardware status (hex): %X \r\n", hardwareStatus.get_state());
-            message.addStatus(hardwareStatus.get_state());
-        } else {
-            consoleMessage("[Particula] No errors detected \r\n", 0);
-        }
         node.send(message.getMessage(), message.getLength());
         ThisThread::sleep_for(SLEEP_TIME);            
     }
