@@ -5,18 +5,11 @@
 
 #if PRODUCTION_ENVIRONMENT
 #define consoleMessage(string, value1)
-#undef LORAWAN_DEBUGGING
 #else
 #define consoleMessage(string, value1) printf(string, value1)
 #endif
 
 #include "config.h"
-#include "BME280.h"
-#include "SDS011.h"
-#include <exception>
-#include "mbed.h"
-#include "AmbiantSensorMessage.h"
-#include "Simple-LoRaWAN.h"
 
 SimpleLoRaWAN::LoRaWANKeys keys = { 
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },         // devEui
