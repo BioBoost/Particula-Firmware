@@ -1,21 +1,3 @@
-# AmbiantSensorMessage/
-# mbed-os/
-# mbed-Simple-LoRaWAN/
-# ParticulaTPH/
-# SDS011_Library/
-# ./.mbed
-# ./mbed_settings.py
-# src/settings.h
-# BUILD
-# <<<<<<< HEAD
-# <<<<<<< HEAD
-# todo.md
-# =======
-# todo.md
-# >>>>>>> chek-power-state
-# =======
-# todo.md
-# >>>>>>> final-form
 AmbiantSensorMessage/
 mbed-os/
 mbed-Simple-LoRaWAN/
@@ -27,3 +9,5 @@ src/settings.h
 BUILD
 todo.md
 .vscode/
+ParticulaBatteryManagement/
+ParticulaApp/
