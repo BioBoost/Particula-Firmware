@@ -14,9 +14,9 @@ using namespace Particula;
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 /* disclaimer pins are not right yet */
-PinName stat1(D5);
-PinName stat2(D4);
-PinName PG(D3);
+PinName stat1(A1);
+PinName stat2(A2);
+PinName PG(A3);
 
 int main(void) {
 
@@ -25,9 +25,9 @@ int main(void) {
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
     HardwareStatus hardwareStatus;
-    BatteryManagement batterymanager(stat1,stat2,PG);
+    BatteryManagement batterymanager(CHARGE_STATUS_1,CHARGE_STATUS_2,POWER_GOOD);
     ParticulaApp particulaApp;
-    SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
+    SDS011 part_sensor(UART_TX_PIN,UART_RX_PIN);  // D1 en D0 voor kleine nucleo
 
     AmbiantSensorMessage versionMessage;
     versionMessage.addVersionNumber(VERSION);
@@ -37,10 +37,10 @@ int main(void) {
         HardwareStatus hardwareStatus;
         const int SLEEP_TIME = MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME;
 
-        // if (!batterymanager.BatterySufficient(&hardwareStatus)) {
-        //     printf("it's looping \r\n");
-        //     continue;
-        // }
+        if (!batterymanager.BatterySufficient(&hardwareStatus)) {
+            printf("it's looping \r\n");
+            continue;
+        }
 
         AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
         consoleMessage("\r\n[Particula] Taking measurements ...\r\n", 0);
@@ -56,7 +56,7 @@ int main(void) {
          * Sleep 30 sec. After this time particle sensor measurements are considered correct
          */
         ThisThread::sleep_for(PART_SENS_WARMUP_TIME);             
-    
+             
         /**
          * Particle sensor takes measurements
          */
@@ -97,7 +97,6 @@ int main(void) {
         /**
          * Print out measurements to console for development purposes
          */
-
         consoleMessage("[Particula] Measered temperature:  %4.2f °C\r\n", particulaApp.returnTemperature());
         consoleMessage("[Particula] Measered humidity:     %4.2f %%\r\n", particulaApp.returnHumidity());
         consoleMessage("[Particula] Measered pressure:     %4.2f hPa\r\n", particulaApp.returnPressure());
@@ -105,7 +104,7 @@ int main(void) {
         consoleMessage("[Particula] Measered PM10:         %4.2f µg/m3\r\n", particulaApp.returnPm10());
 
         node.send(message.getMessage(), message.getLength());
-        ThisThread::sleep_for(SLEEP_TIME);            
+        ThisThread::sleep_for(SLEEP_TIME);           
     }
     return 0;
 }
