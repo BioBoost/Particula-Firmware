@@ -36,7 +36,7 @@
         "battery_charger_3": {
             "value": "",
             "macro_name": "POWER_GOOD"
-        },
+        }
     },
     "target_overrides": {
         "*": {
