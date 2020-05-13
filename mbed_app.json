@@ -40,7 +40,8 @@
     },
     "target_overrides": {
         "*": {
-            "rtos.main-thread-stack-size" : 8192
+            "rtos.main-thread-stack-size" : 8192,
+            "platform.stdio-baud-rate": 115200
         },
         "NUCLEO_L476RG": {
             "i2c_sda": "D14",
