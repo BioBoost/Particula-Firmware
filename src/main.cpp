@@ -20,7 +20,7 @@ PinName PG(A3);
 
 int main(void) {
 
-    consoleMessage("\r\n\r\n[Particula] Loading Firmware ...", 0);
+    consoleMessage("\r\n\r\n[Particula] Loading Firmware ...%d\r\n", 0);
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
@@ -43,7 +43,7 @@ int main(void) {
         }
 
         AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
-        consoleMessage("\r\n[Particula] Taking measurements ...\r\n", 0);
+        consoleMessage("\r\n[Particula] Taking measurements ...%d\r\n", 0);
 
 
         /**
