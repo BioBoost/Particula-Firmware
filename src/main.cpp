@@ -11,6 +11,8 @@
 
 using namespace Particula;
 
+Serial pc(USBTX, USBRX, 115200);
+
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 int main(void) {
