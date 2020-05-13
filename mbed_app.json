@@ -26,15 +26,15 @@
             "macro_name": "LORA_RESET_PIN"
         },
         "battery_charger_1": {
-            "value": "",
+            "value": "D4",
             "macro_name": "CHARGE_STATUS_1"
         },
         "battery_charger_2": {
-            "value": "",
+            "value": "D5",
             "macro_name": "CHARGE_STATUS_2"
         },
         "battery_charger_3": {
-            "value": "",
+            "value": "D6",
             "macro_name": "POWER_GOOD"
         }
     },
@@ -49,9 +49,9 @@
             "uart_rx": "A5",
             "lora_nss": "A0",
             "lora_reset": "A1",
-            "battery_charger_1": "",
-            "battery_charger_2": "",
-            "battery_charger_3": ""
+            "battery_charger_1": "D10",
+            "battery_charger_2": "D11",
+            "battery_charger_3": "D12"
         },
         "NUCLEO_L432KC": {
             "i2c_sda": "D4",
@@ -60,9 +60,9 @@
             "uart_rx": "D0",
             "lora_nss": "A3",
             "lora_reset": "A4",
-            "battery_charger_1": "",
-            "battery_charger_2": "",
-            "battery_charger_3": ""
+            "battery_charger_1": "D5",
+            "battery_charger_2": "D6",
+            "battery_charger_3": "D7"
         }
     }
 }

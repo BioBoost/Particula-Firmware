@@ -13,11 +13,6 @@ using namespace Particula;
 
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
-/* disclaimer pins are not right yet */
-PinName stat1(A1);
-PinName stat2(A2);
-PinName PG(A3);
-
 int main(void) {
 
     consoleMessage("\r\n\r\n[Particula] Loading Firmware ...%d\r\n", 0);
@@ -104,7 +99,7 @@ int main(void) {
         consoleMessage("[Particula] Measered PM10:         %4.2f µg/m3\r\n", particulaApp.returnPm10());
 
         node.send(message.getMessage(), message.getLength());
-        ThisThread::sleep_for(SLEEP_TIME);           
+        ThisThread::sleep_for(SLEEP_TIME);            
     }
     return 0;
 }
