@@ -36,7 +36,7 @@ int main(void) {
             continue;
         }
         AmbiantSensorMessage message;   
-        consoleMessage("\r\n[Particula] Taking measurements ...%d\r\n", 0);
+        consoleMessage("\r\n[Particula] Taking measurements ...%d\r\n");
 
         particulaApp.partMeasureCycle(&part_sensor,&hardwareStatus);
 
