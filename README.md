@@ -2,7 +2,7 @@
 
 ![Markdown Linter](../../workflows/Markdown%20Linter/badge.svg?branch=master)
 
-This is the firmware required to make the Particula project work. The particula project is a Smart Self-Sufficient Open Wireless Air Quality Sensor. This IoT device makes use of a particle sensor, a tph sensor and LoRaWAN to transmit its data. 
+This is the firmware required to make the Particula project work. The particula project is a Smart Self-Sufficient Open Wireless Air Quality Sensor. This IoT device makes use of a particle sensor, a tph sensor and LoRaWAN to transmit its data.
 
 The particle sensor reads the particles of 2.5 and 10 µm using a laser sensor.
 
