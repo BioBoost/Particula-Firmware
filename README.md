@@ -2,6 +2,12 @@
 
 ![Markdown Linter](../../workflows/Markdown%20Linter/badge.svg?branch=master)
 
+This is the firmware required to make the Particula project work. The particula project is a Smart Self-Sufficient Open Wireless Air Quality Sensor. This IoT device makes use of a particle sensor, a tph sensor and LoRaWAN to transmit its data. 
+
+The particle sensor reads the particles of 2.5 and 10 µm using a laser sensor.
+
+The tph sensor reads Temperature, Pressure and Humidity.
+
 ## Getting started
 
 Clone the project, install the dependencies and setup your mbed development environment to compile the firmware and flash it.
@@ -198,8 +204,10 @@ You can add your board with it's preferred pins for serial communication to the 
 
 - [ParticulaTPH](https://github.com/vives-projectwerk-2-2020/ParticulaTPH)
 
-### SDS011 Particel sensor (over UART)
+### SDS011 Particle sensor (over UART)
 
 - [SDS011_Library](https://github.com/vives-projectwerk-2-2020/SDS011_Library)
 
 ### EEPROM (over I2C)
+
+## Credits
