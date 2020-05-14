@@ -15,7 +15,7 @@ mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 int main(void) {
 
-    consoleMessage("\r\n\r\n[Particula] Loading Firmware ...%d\r\n", 0);
+    consoleMessage("\r\n\r\n[Particula] Loading Firmware ...\r\n");
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
