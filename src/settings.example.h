@@ -1,7 +1,7 @@
 #pragma once
 
 #define PRODUCTION_ENVIRONMENT false
-#define VERSION 0.9
+#define VERSION 1.0
 
 #include "config.h"
 
