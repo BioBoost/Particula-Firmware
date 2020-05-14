@@ -1,12 +1,12 @@
 #pragma once
 
-#define PRODUCTION_ENVIRONMENT true
+#define PRODUCTION_ENVIRONMENT false
 #define VERSION 0.9
 
 #if PRODUCTION_ENVIRONMENT
-#define consoleMessage(string, value1)
+#define consoleMessage(msg, value1)
 #else
-#define consoleMessage(string, value1) printf(string, value1)
+#define consoleMessage(...) printf(__VA_ARGS__)
 #endif
 
 #include "config.h"

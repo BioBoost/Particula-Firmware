@@ -15,7 +15,7 @@ mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
 int main(void) {
 
-    consoleMessage("\r\n\r\n[Particula] Loading Firmware ...%d\r\n", 0);
+    consoleMessage("\r\n\r\n[Particula] Loading Firmware ...\r\n");
 
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
     BME280 tph_sensor(&i2c_com);
@@ -38,14 +38,14 @@ int main(void) {
         }
 
         AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
-        consoleMessage("\r\n[Particula] Taking measurements ...%d\r\n", 0);
+        consoleMessage("\r\n[Particula] Taking measurements ...\r\n");
 
 
         /**
          * Particle sensor wakeup
          */
         char * partSensorWakeup = particulaApp.partSensorWake(&part_sensor, &hardwareStatus);
-        consoleMessage(partSensorWakeup, 0);        
+        consoleMessage(partSensorWakeup);        
  
         /**
          * Sleep 30 sec. After this time particle sensor measurements are considered correct
@@ -56,37 +56,37 @@ int main(void) {
          * Particle sensor takes measurements
          */
         char * partSensorRead = particulaApp.partSensorRead(&part_sensor, &hardwareStatus);
-        consoleMessage(partSensorRead, 0);
+        consoleMessage(partSensorRead);
 
         /**
          * Particle sensor goes to sleep
          */
         char * partSensorSleep = particulaApp.partSensorSleep(&part_sensor, &hardwareStatus);
-        consoleMessage(partSensorSleep, 0);
+        consoleMessage(partSensorSleep);
 
         /**
          * TPH sensor wakeup
          */
         char * tphSensorWakeup = particulaApp.tphSensorWake(&tph_sensor, &hardwareStatus);
-        consoleMessage(tphSensorWakeup, 0);
+        consoleMessage(tphSensorWakeup);
 
         /**
          * TPH sensor save measurements to add to LoRa message and check if measurements are valid
          */
         char * tphSensorRead = particulaApp.tphSensorRead(&tph_sensor, &hardwareStatus);
-        consoleMessage(tphSensorRead, 0);      
+        consoleMessage(tphSensorRead);      
 
         /**
          * TPH sensor goes to sleep
          */
         char * tphSensorSleep = particulaApp.tphSensorSleep(&tph_sensor);
-        consoleMessage(tphSensorSleep, 0);
+        consoleMessage(tphSensorSleep);
 
         /**
          * All sensor measurements and binary coded errors added to LoRa message
          */
         char * addToLoraMessage = particulaApp.addToLoRaMessage(&message, &hardwareStatus);
-        consoleMessage(addToLoraMessage, 0);
+        consoleMessage(addToLoraMessage);
         consoleMessage("[Particula] Hardware status (hex): %X \r\n", hardwareStatus.get_state());
 
         /**
