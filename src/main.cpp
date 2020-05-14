@@ -29,75 +29,21 @@ int main(void) {
     node.send(versionMessage.getMessage(), versionMessage.getLength());
 
     while (true) {
-        HardwareStatus hardwareStatus;
         const int SLEEP_TIME = MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME;
 
         if (!batterymanager.BatterySufficient(&hardwareStatus)) {
-            printf("it's looping \r\n");
+            ThisThread::sleep_for(MEASUREMENT_INTERVAL);
             continue;
         }
-
-        AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
+        AmbiantSensorMessage message;   
         consoleMessage("\r\n[Particula] Taking measurements ...%d\r\n", 0);
 
+        particulaApp.partMeasureCycle(&part_sensor,&hardwareStatus);
 
-        /**
-         * Particle sensor wakeup
-         */
-        char * partSensorWakeup = particulaApp.partSensorWake(&part_sensor, &hardwareStatus);
-        consoleMessage(partSensorWakeup, 0);        
- 
-        /**
-         * Sleep 30 sec. After this time particle sensor measurements are considered correct
-         */
-        ThisThread::sleep_for(PART_SENS_WARMUP_TIME);             
-             
-        /**
-         * Particle sensor takes measurements
-         */
-        char * partSensorRead = particulaApp.partSensorRead(&part_sensor, &hardwareStatus);
-        consoleMessage(partSensorRead, 0);
-
-        /**
-         * Particle sensor goes to sleep
-         */
-        char * partSensorSleep = particulaApp.partSensorSleep(&part_sensor, &hardwareStatus);
-        consoleMessage(partSensorSleep, 0);
-
-        /**
-         * TPH sensor wakeup
-         */
-        char * tphSensorWakeup = particulaApp.tphSensorWake(&tph_sensor, &hardwareStatus);
-        consoleMessage(tphSensorWakeup, 0);
-
-        /**
-         * TPH sensor save measurements to add to LoRa message and check if measurements are valid
-         */
-        char * tphSensorRead = particulaApp.tphSensorRead(&tph_sensor, &hardwareStatus);
-        consoleMessage(tphSensorRead, 0);      
-
-        /**
-         * TPH sensor goes to sleep
-         */
-        char * tphSensorSleep = particulaApp.tphSensorSleep(&tph_sensor);
-        consoleMessage(tphSensorSleep, 0);
-
-        /**
-         * All sensor measurements and binary coded errors added to LoRa message
-         */
-        char * addToLoraMessage = particulaApp.addToLoRaMessage(&message, &hardwareStatus);
-        consoleMessage(addToLoraMessage, 0);
-        consoleMessage("[Particula] Hardware status (hex): %X \r\n", hardwareStatus.get_state());
-
-        /**
-         * Print out measurements to console for development purposes
-         */
-        consoleMessage("[Particula] Measered temperature:  %4.2f °C\r\n", particulaApp.returnTemperature());
-        consoleMessage("[Particula] Measered humidity:     %4.2f %%\r\n", particulaApp.returnHumidity());
-        consoleMessage("[Particula] Measered pressure:     %4.2f hPa\r\n", particulaApp.returnPressure());
-        consoleMessage("[Particula] Measered PM25:         %4.2f µg/m3\r\n", particulaApp.returnPm25());
-        consoleMessage("[Particula] Measered PM10:         %4.2f µg/m3\r\n", particulaApp.returnPm10());
-
+        particulaApp.tphMeasureCycle(&tph_sensor,&hardwareStatus);
+       
+        particulaApp.LoRaWANMakeCycle(&message,&hardwareStatus);
+        
         node.send(message.getMessage(), message.getLength());
         ThisThread::sleep_for(SLEEP_TIME);            
     }
