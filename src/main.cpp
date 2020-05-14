@@ -1,4 +1,3 @@
-#include "settings.h"
 #include "BME280.h"
 #include "SDS011.h"
 #include <exception>
@@ -8,6 +7,7 @@
 #include "../lib/hardwarestatus.h"
 #include "BatteryManagement.h"
 #include "ParticulaApp.h"
+#include "settings.h"
 
 using namespace Particula;
 
@@ -38,10 +38,8 @@ int main(void) {
         AmbiantSensorMessage message;   
         consoleMessage("\r\n[Particula] Taking measurements ...%d\r\n");
 
-        particulaApp.partMeasureCycle(&part_sensor,&hardwareStatus);
-
+        particulaApp.partMeasureCycle(&part_sensor,&hardwareStatus, PART_SENS_WARMUP_TIME);
         particulaApp.tphMeasureCycle(&tph_sensor,&hardwareStatus);
-       
         particulaApp.LoRaWANMakeCycle(&message,&hardwareStatus);
         
         node.send(message.getMessage(), message.getLength());

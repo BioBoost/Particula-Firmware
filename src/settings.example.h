@@ -3,12 +3,6 @@
 #define PRODUCTION_ENVIRONMENT false
 #define VERSION 0.9
 
-#if PRODUCTION_ENVIRONMENT
-#define consoleMessage(msg, value1)
-#else
-#define consoleMessage(...) printf(__VA_ARGS__)
-#endif
-
 #include "config.h"
 
 SimpleLoRaWAN::LoRaWANKeys keys = { 
@@ -21,7 +15,7 @@ SimpleLoRaWAN::Pinmapping pins = { D11, D12, D13, LORA_NSS_PIN, LORA_RESET_PIN, 
 
 namespace Particula {
 
-        const unsigned int PART_SENS_WARMUP_TIME = (PRODUCTION_ENVIRONMENT ? 30000 : 30000);   // ms
-        const unsigned int MEASUREMENT_INTERVAL = (PRODUCTION_ENVIRONMENT ? 300000 : 60000);   // ms
+    const unsigned int PART_SENS_WARMUP_TIME = (PRODUCTION_ENVIRONMENT ? 30000 : 30000);   // ms
+    const unsigned int MEASUREMENT_INTERVAL = (PRODUCTION_ENVIRONMENT ? 300000 : 60000);   // ms
 
 };
