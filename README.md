@@ -35,61 +35,161 @@ Looking for more information about how to setup or add your device to The Things
 ## Code example: main
 
 ```cpp
-#include "mbed.h"
-#include "AmbiantSensorMessage.h"
-#include "Simple-LoRaWAN.h"
 #include "settings.h"
 #include "BME280.h"
 #include "SDS011.h"
+#include <exception>
+#include "mbed.h"
+#include "Simple-LoRaWAN.h"
+#include "AmbiantSensorMessage.h"
+#include "../lib/hardwarestatus.h"
 
-Serial pc(USBTX, USBRX);
 mbed::I2C i2c_com(I2C_SDA_PIN, I2C_SCK_PIN);
 
+using namespace Particula;
 
 int main(void) {
+
+    printf("\r\n\r\n[Particula] Loading Firmware ...");
+
     SimpleLoRaWAN::Node node(keys, pins);   // If placed in main, stack size probably too small (Results in Fatal Error)
-
     BME280 tph_sensor(&i2c_com);
-
-    SDS011_Particle::SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);
-
-    pc.printf("\r\n\r\n[Particula] Loading Firmware ...");
+    SDS011 part_sensor(UART_TX_PIN, UART_RX_PIN);  // D1 en D0 voor kleine nucleo
+    HardwareStatus hardwareStatus;
+    AmbiantSensorMessage versionMessage;
+    versionMessage.addVersionNumber(VERSION);
+    node.send(versionMessage.getMessage(), versionMessage.getLength());
 
     while (true) {
-        ParticulaLora::AmbiantSensorMessage message;    // Must be placed here, new values will otherwise be added to the same message
-        pc.printf("\r\n[Particula] Taking measurements ...\r\n");
-        part_sensor.wakeUp();
-        part_sensor.read();
-        tph_sensor.awake();
-        double temperature = tph_sensor.temperature();  // value in °C
-        double humidity = tph_sensor.humidity();        // value in %
-        double pressure = tph_sensor.presure();        // value in hPa
-        tph_sensor.sleep();
+
+        const int SLEEP_TIME = MEASUREMENT_INTERVAL - PART_SENS_WARMUP_TIME;
+
+        AmbiantSensorMessage message;   // Must be placed here, new values will otherwise be added to the same message
+        printf("\r\n[Particula] Taking measurements ...\r\n");
+
+
+        /**
+         * Particle sensor wakeup
+         */
+        if(part_sensor.wakeUp() == WAKEUP_SUCCESSFULL){
+            printf("[Particle sensor] wake up has been successfull \r\n", 0);
+        } else {
+            printf("[Particle sensor] wake up hasn't been successfull \r\n", 0);
+            hardwareStatus.particle_wakeup_failed();
+        }
+
+
+        /**
+         * Sleep 30 sec. After this time particle sensor measurements are considered correct
+         */
+        ThisThread::sleep_for(PART_SENS_WARMUP_TIME);     
+        
+    
+        /**
+         * Particle sensor takes measurements
+         */
+        if(part_sensor.read() == READ_SUCCESSFULL){
+            printf("[Particle sensor] read has been successfull \r\n", 0);
+        } else {
+            printf("[Particle sensor] read hasn't been successfull \r\n", 0);
+            hardwareStatus.particle_read_failed();
+        }
+
+
+        /**
+         * Particle sensor save measurements to add to LoRa message
+         */
         double pm25 = part_sensor.getPM25Value();          // value in µg/m³
         double pm10 = part_sensor.getPM10Value();          // value in µg/m³
 
-        pc.printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
-        pc.printf("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
-        pc.printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
-        pc.printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
-        pc.printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
 
-        int testError = 0xAA;
+        /**
+         * Particle sensor goes to sleep
+         */
+        if (part_sensor.sleep() == SLEEP_SUCCESSFULL) {
+            printf("[Particle sensor] sleep has been successfull \r\n", 0);
+        } else {
+            printf("[Particle sensor] sleep hasn't been successfull \r\n", 0);
+            hardwareStatus.particle_sleep_failed();
+        }
 
+
+        /**
+         * TPH sensor wakeup
+         */
+        tph_sensor.awake();
+        if (tph_sensor.present()) {
+            printf("[TPH sensor] sensor is present \r\n", 0);
+        } else {
+            printf("[TPH sensor] sensor is not present \r\n", 0);
+            hardwareStatus.tph_wakeup_failed();
+        }
+
+
+        /**
+         * TPH sensor save measurements to add to LoRa message
+         */
+        bool temperatureValueCorrect = false;
+        bool humidityValueCorrect = false;
+        bool pressureValueCorrect = false;
+        double temperature = tph_sensor.temperature(&temperatureValueCorrect);  // value in °C
+        double humidity = tph_sensor.humidity(&humidityValueCorrect);           // value in %
+        double pressure = tph_sensor.presure(&pressureValueCorrect);            // value in hPa
+
+
+        /**
+         *  TPH sensor check if measurements are valid
+         */
+        if (temperatureValueCorrect && humidityValueCorrect && pressureValueCorrect) {
+            printf("[TPH sensor] read has been successful \r\n", 0);
+        } else {
+            printf("[TPH sensor] read has been unsuccessful \r\n", 0);
+            hardwareStatus.tph_read_failed();
+        }
+
+
+        /**
+         * TPH sensor goes to sleep
+         */
+        tph_sensor.sleep();
+
+
+        /**
+         * All sensor measurements added to LoRa message
+         */
         message.addTemperature(temperature);
         message.addHumidity(humidity);
         message.addPressure(pressure);
         message.addPM(pm25);
         message.addPM(pm10);
-        message.addError(testError);
 
+
+        /**
+         * Print out measurements to console for development purposes
+         */
+        printf("[Particula] Measered temperature:  %4.2f °C\r\n", temperature);
+        printf("[Particula] Measered humidity:     %4.2f %%\r\n", humidity);
+        printf("[Particula] Measered pressure:     %4.2f hPa\r\n", pressure);
+        printf("[Particula] Measered PM25:         %4.2f µg/m3\r\n", pm25);
+        printf("[Particula] Measered PM10:         %4.2f µg/m3\r\n", pm10);
+
+
+        /**
+         * Add binary coded errors to LoRa message and send the message
+         */
+        if (hardwareStatus.errors()) {
+            printf("[Particula] Errors detected, adding them to lora message \r\n", 0);
+            printf("[Particula] Hardware status (hex): %X \r\n", hardwareStatus.get_state());
+            message.addStatus(hardwareStatus.get_state());
+        } else {
+            printf("[Particula] No errors detected \r\n", 0);
+        }
         node.send(message.getMessage(), message.getLength());
-        part_sensor.sleep();
-        pc.printf("[Particula] Going to sleep, deep sleep possible (1: yes, 0: no): %i\r\n", sleep_manager_can_deep_sleep());
-        ThisThread::sleep_for(30000);
+        ThisThread::sleep_for(SLEEP_TIME);            
     }
     return 0;
 }
+
 ```
 
 ## Pinout
