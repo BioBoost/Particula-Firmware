@@ -8,6 +8,25 @@ The particle sensor reads the particles of 2.5 and 10 µm using a laser sensor.
 
 The tph sensor reads Temperature, Pressure and Humidity.
 
+## The hardware
+
+For development we used these two types of development boards:
+
+- Nucleo L432KC
+- Nucleo L476RG
+
+With the following sensors/modules:
+
+- RFM95W (LoRa)
+- Bosch BME280 (temperature, pressure, humidity)
+- SDS011 Particle sensor
+
+The final hardware:
+
+- [Solar panel with charge system](https://github.com/vives-projectwerk-2-2020/FinalSolarChargeSystem)
+- [Prototype board with sensors](https://github.com/vives-projectwerk-2-2020/Prototype_Board_Niels.git)
+- [LoRaWAN antanna board](https://github.com/vives-projectwerk-2-2020/LoRaWAN-antenna.git)
+
 ## Getting started
 
 Clone the project, install the dependencies and setup your mbed development environment to compile the firmware and flash it.
@@ -103,12 +122,11 @@ We use the default pinmap of the shield, make sure the dip switches on the back 
 | MOSI | D11
 | MISO | D12
 | CLK | D13
-| NSS | A0
-| RESET | A1
+| NSS | A0 (A3 on NUCLEO_L432KC)
+| RESET | A1 (A4 on NUCLEO_L432KC)
 | DIO 0 | D2
 | DIO 1 | D3
 
-On the NUCLEO_L432KC the A3 pin is used for NSS and A4 is used for RESET.
 
 ### BME280 (TPH) sensor
 
@@ -137,32 +155,16 @@ TX and RX lines for the different development boards:
 
 (remember to connect sensor-RX to nucleo-TX and vice versa)
 
+For later implementation of the charge controller functionality the following pins have been implemented:
+
+| Pin 1 | Pin 2 | Pin 3 |
+|---|---|---|
+| D6 | D7 | D8 |
+
 ## What pins should I use with a different board
 
 Choose UART RX and TX pins of your choice for the SDS011 particle sensor and I2C SDA and SCK pins for the BME280 TPH sensor.
 You can add your board with it's preferred pins for serial communication to the `target_overrides` section in the `mbed_app.json` file.
-
-### Example `target_overrides` section
-
-```json
-"target_overrides": {
-        "NUCLEO_L476RG": {
-            "i2c_sda": "D14",
-            "i2c_sck": "D15",
-            "uart_tx": "A4",
-            "uart_rx": "A5",
-            "lora_nss": "A0",
-            "lora_reset": "A1"
-        },
-        "NUCLEO_L432KC": {
-            "i2c_sda": "D4",
-            "i2c_sck": "D5",
-            "uart_tx": "D1",
-            "uart_rx": "D0",
-            "lora_nss": "A3",
-            "lora_reset": "A4"
-        }
-```
 
 ## TTN Payload Decoder Output Example
 
@@ -195,19 +197,22 @@ You can add your board with it's preferred pins for serial communication to the 
 
 ## Used modules and libraries
 
-### LoRaWAN RFM95W Transceiver (over ISP)
+### LoRaWAN RFM95W Transceiver (ISP)
 
 - [Mbed-Simple-LoRaWAN](https://github.com/sillevl/mbed-Simple-LoRaWAN)
 - [AmbientSensorMessage](https://github.com/vives-projectwerk-2-2020/AmbiantSensorMessage)
 
-### Bosch BME280 TPH Sensor (over I2C)
+### Bosch BME280 TPH Sensor (I2C)
 
 - [ParticulaTPH](https://github.com/vives-projectwerk-2-2020/ParticulaTPH)
 
-### SDS011 Particle sensor (over UART)
+### SDS011 Particle sensor (UART)
 
 - [SDS011_Library](https://github.com/vives-projectwerk-2-2020/SDS011_Library)
 
-### EEPROM (over I2C)
+### EEPROM (I2C)
 
-## Credits
+We ended up not implementing the functionality from this driver but it's a possible future addition.
+It is setup to be able to store you LoRaWAN keys so this can be done in a batch.
+
+- [EEPROM LoRaWAN Keys driver](https://github.com/vives-projectwerk-2-2020/EepromLoraWANKeys)
